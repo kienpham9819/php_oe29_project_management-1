@@ -13,3 +13,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 Route::get('lang/{lang}', 'LocalizationController@translate')->name('localization');
+
+Auth::routes(['register' => false]);
+
+Route::get('/', 'HomeController@index')->name('home');
