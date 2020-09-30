@@ -42,4 +42,34 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Role::class);
     }
+
+    public function courses()
+    {
+        return $this->belongsToMany(Course::class);
+    }
+
+    public function groups()
+    {
+        return $this->belongsToMany(Group::class);
+    }
+
+    public function teaches()
+    {
+        return $this->hasMany(Course::class);
+    }
+
+    public function taskLists()
+    {
+        return $this->hasMany(TaskList::class);
+    }
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
+    }
+
+    public function tasks()
+    {
+        return $this->hasManyThrough(Task::class, TaskList::class);
+    }
 }
