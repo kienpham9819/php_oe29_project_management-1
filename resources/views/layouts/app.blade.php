@@ -45,8 +45,8 @@
                     </li>
                     @guest
                         <li class="nav-item dropdown mr-5">
-                            <a id="managingDropdown" class="nav-link text-white" href="#" role="button"v-pre>
-                                {{ trans('login') }}
+                            <a id="managingDropdown" class="nav-link text-white" href="{{ route('login') }}" role="button" v-pre>
+                                {{ trans('general.login') }}
                                 <span class="caret"></span>
                             </a>
                         </li>
@@ -65,9 +65,9 @@
                                 <div class="dropdown-divider"></div>
                                 <form id="logout-form" action="{{ route('logout') }}" method="POST">
                                     @csrf
-                                     <button class="dropdown-item">
-                                    <i class="fas fa-sign-out-alt"></i>
-                                    {{ trans('logout') }}
+                                    <button class="dropdown-item">
+                                        <i class="fas fa-sign-out-alt"></i>
+                                        {{ trans('general.logout') }}
                                     </button>
                                 </form>
                             </div>
