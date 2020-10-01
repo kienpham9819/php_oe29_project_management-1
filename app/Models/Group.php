@@ -16,7 +16,7 @@ class Group extends Model
 
     public function course()
     {
-        return $this->belongsTo(Class::class);
+        return $this->belongsTo(Course::class);
     }
 
     public function project()

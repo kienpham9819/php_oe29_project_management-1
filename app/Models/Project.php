@@ -16,6 +16,6 @@ class Project extends Model
 
     public function taskLists()
     {
-        return $this->hasMany(List::class);
+        return $this->hasMany(TaskList::class);
     }
 }
