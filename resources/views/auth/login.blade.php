@@ -13,30 +13,49 @@
                 <form method="POST" action="{{ route('login') }}">
                     @csrf
                     <div class="input-group input-group-lg p-2">
-                        <input type="email" class="form-control rounded-pill pl-4 @error('email') is-invalid @enderror" name="email" placeholder="{{ trans('login.email') }}"  value="{{ old('email') }}" required autocomplete="email" autofocus>
+                        <input id="email" type="email"
+                            class="form-control rounded-pill pl-4 @error('email') is-invalid @enderror"
+                            name="email"
+                            placeholder="{{ trans('login.email') }}"
+                            value="{{ old('email') }}"
+                            required
+                            autocomplete="email"
+                            autofocus>
+
+                        @error('email')
+                            <span class="invalid-feedback" role="alert">
+                                <strong>{{ $message }}</strong>
+                            </span>
+                        @enderror
                     </div>
-                    @error('email')
-                        <span class="invalid-feedback" role="alert">
-                            <strong>{{ $message }}</strong>
-                        </span>
-                    @enderror
                     <div class="input-group input-group-lg p-2">
-                        <input type="password" class="form-control rounded-pill pl-4 @error('password') is-invalid @enderror" name="password" placeholder="{{ trans('login.password') }}" required autocomplete="current-password">
+                        <input id="password" type="password"
+                            class="form-control rounded-pill pl-4 @error('password') is-invalid @enderror"
+                            name="password"
+                            placeholder="{{ trans('login.password') }}"
+                            required
+                            autocomplete="current-password">
+
+                        @error('password')
+                            <span class="invalid-feedback" role="alert">
+                                <strong>{{ $message }}</strong>
+                            </span>
+                        @enderror
                     </div>
-                    @error('password')
-                        <span class="invalid-feedback" role="alert">
-                            <strong>{{ $message }}</strong>
-                        </span>
-                    @enderror
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }}>
+                        <input class="form-check-input" type="checkbox"
+                            name="remember"
+                            id="remember"
+                            {{ old('remember') ? 'checked' : '' }}>
 
                         <label class="form-check-label" for="remember">
                             {{ trans('login.remember') }}
                         </label>
                     </div>
                     <div class="input-group input-group-lg p-2">
-                        <input type="submit" class="form-control bg-primary text-white text-uppercase rounded-pill pl-4" value="{{ trans('login.login') }}">
+                        <input type="submit"
+                            class="form-control bg-primary text-white text-uppercase rounded-pill pl-4"
+                            value="{{ trans('login.login') }}">
                     </div>
                 </form>
                 @if (Route::has('password.request'))
