@@ -58,7 +58,7 @@
                                 <span class="caret"></span>
                             </a>
                             <div class="dropdown-menu" aria-labelledby="managingDropdown">
-                                <a class="dropdown-item" href="">
+                                <a class="dropdown-item" href="{{ route('change_password') }}">
                                     <i class="fas fa-user-cog"></i>
                                     {{ trans('general.setting') }}
                                 </a>

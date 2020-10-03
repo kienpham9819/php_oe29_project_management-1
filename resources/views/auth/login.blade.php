@@ -21,7 +21,6 @@
                             required
                             autocomplete="email"
                             autofocus>
-
                         @error('email')
                             <span class="invalid-feedback" role="alert">
                                 <strong>{{ $message }}</strong>
@@ -35,7 +34,6 @@
                             placeholder="{{ trans('login.password') }}"
                             required
                             autocomplete="current-password">
-
                         @error('password')
                             <span class="invalid-feedback" role="alert">
                                 <strong>{{ $message }}</strong>
