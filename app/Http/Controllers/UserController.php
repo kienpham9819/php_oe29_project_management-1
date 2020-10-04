@@ -8,6 +8,8 @@ use App\Models\User;
 use App\Models\Role;
 use App\Http\Requests\UserRequest;
 use App\Http\Requests\EditUserRequest;
+use App\Imports\UsersImport;
+use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class UserController extends Controller
@@ -116,5 +118,13 @@ class UserController extends Controller
 
         return redirect()->route('users.index')
             ->with('message', trans('user.noti_delete'));
+    }
+
+    public function import(Request $request)
+    {
+        Excel::import(new UsersImport, $request->file('file'));
+
+        return redirect()->route('users.index')
+            ->with('message', trans('user.noti_import'));
     }
 }

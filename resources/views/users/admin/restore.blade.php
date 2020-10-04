@@ -31,38 +31,62 @@
                     @error('name')
                         <span class="text-danger">{{ $message }}</span>
                     @enderror
-                    <input type="text" class="form-control" name="name" id="name_user" placeholder="{{ trans('user.type_name') }}" value="{{ old('name') }}">
+                    <input type="text"
+                        class="form-control"
+                        name="name" id="name_user"
+                        placeholder="{{ trans('user.type_name') }}"
+                        value="{{ old('name') }}">
                 </div>
                 <div class="form-group">
                     <label for="email_user">{{ trans('user.email') }}</label>
                     @error('email')
                         <span class="text-danger">{{ $message }}</span>
                     @enderror
-                    <input type="email" class="form-control" name="email" id="email_user" placeholder="{{ trans('user.type_email') }}" value="{{ old('email') }}">
+                    <input type="email"
+                        class="form-control"
+                        name="email"
+                        id="email_user"
+                        placeholder="{{ trans('user.type_email') }}"
+                        value="{{ old('email') }}">
                 </div>
                 <div class="form-group">
                     <label for="password_user">{{ trans('user.password') }}</label>
                     @error('password')
                         <span class="text-danger">{{ $message }}</span>
                     @enderror
-                    <input type="password" class="form-control" name="password" id="password_user" placeholder="{{ trans('user.type_password') }}" value="{{ old('password') }}">
+                    <input type="password"
+                        class="form-control"
+                        name="password"
+                        id="password_user"
+                        placeholder="{{ trans('user.type_password') }}"
+                        value="{{ old('password') }}">
                 </div>
                 <div class="form-group">
                     <label for="repassword">{{ trans('user.password_confirm') }}</label>
                     @error('password_confirm')
                         <span class="text-danger">{{ $message }}</span>
                     @enderror
-                    <input type="password" class="form-control" name="password_confirm" id="repassword" placeholder="{{ trans('user.retype_password') }}" value="{{ old('password_confirm') }}">
+                    <input type="password"
+                        class="form-control"
+                        name="password_confirm"
+                        id="repassword"
+                        placeholder="{{ trans('user.retype_password') }}"
+                        value="{{ old('password_confirm') }}">
                 </div>
                 <button type="submit" class="btn btn-primary">{{ trans('user.save') }}</button>
             </form>
             <hr>
-            <form action="" method="post">
+            @if ($errors->any())
+                @foreach ($errors->all() as $error)
+                    <span class="text-danger">{{ $error }}</span></br>
+                @endforeach
+            @endif
+            <form action="{{ route('users.import') }}" method="post" enctype="multipart/form-data">
                 @csrf
                 <div class="input-group mb-3">
-                    <input type="file" name="file" aria-label="file" accept=".csv,.xlsx,.xls">
+                    <input type="file" name="file" aria-label="file" accept=".csv,.xlsx,.xls" >
                 </div>
-                <input type="submit" class="btn btn-success" value="Import">
+                <input type="submit" class="btn btn-success" value="{{ trans('user.import') }}">
             </form>
         </div>
     </div>
