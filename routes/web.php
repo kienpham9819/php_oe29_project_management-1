@@ -22,3 +22,4 @@ Route::delete('user-force-delete/{id}', 'UserController@forceDelete')->name('use
 Route::get('change-password', 'PasswordController@editPassword')->name('change_password');
 Route::patch('change-password', 'PasswordController@updatePassword')->name('update_password');
 Route::post('import', 'UserController@import')->name('users.import');
+Route::resource('roles', 'RoleController');

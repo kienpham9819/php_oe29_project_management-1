@@ -9,9 +9,14 @@ class Role extends Model
 {
     use SoftDeletes;
 
+    protected $fillable = [
+        'name',
+        'slug',
+    ];
+
     public function users()
     {
-        return $this->belongsToMany(User::class);
+        return $this->belongsToMany(User::class)->withPivot('course_id');
     }
 
     public function permissions()
