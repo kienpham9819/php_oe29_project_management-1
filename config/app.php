@@ -17,6 +17,10 @@ return [
 
     'logo' => 'images/LOGO.svg',
 
+    'default' => 0,
+
+    'display_limit' => 3,
+
     /*
     |--------------------------------------------------------------------------
     | Application Environment
