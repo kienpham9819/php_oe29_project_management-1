@@ -30,26 +30,22 @@ class HomeController extends Controller
         $approved = config('app.default');
         $unfinished = $user->tasks()->where('is_completed', false)->count();
         $completed = $user->tasks()->where('is_completed', true)->count();
-        $groups = $user->groups()->with('project')->orderBy('updated_at', 'desc')->get();
-
-        foreach ($groups as $group) {
-            if (isset($group->project)) {
-                if ($group->project->is_accepted) {
-                    $approved++;
-                } else {
-                    $pending++;
-                }
-            }
-        }
-
+        $groups = $user->groups()
+            ->has('project')
+            ->pluck('groups.id');
+        $projects = Project::whereIn('id', $groups)
+            ->with('group.course')
+            ->orderBy('updated_at', 'desc')->get();
+        $approved = $projects->where('is_accepted', true)->count();
+        $pending = count($projects) - $approved;
+        $projects->splice(config('app.display_limit'));
         $courses = $user->courses()
             ->orderBy('updated_at', 'desc')
             ->limit(config('app.display_limit'))->get();
-        $groups->splice(config('app.display_limit'));
 
         return view('home', compact([
-            'groups',
             'courses',
+            'projects',
             'pending',
             'approved',
             'unfinished',

@@ -7,11 +7,11 @@
                 <li class="breadcrumb-item active text-capitalize" aria-current="page">{{ trans('general.dashboard') }}</li>
             </ol>
         </nav>
-        <div class="row">
+        <div class="row pr-3">
             <div class="col-md-4 mb-2 text-capitalize">
                 <ul class="nav flex-column border-left">
                     <li class="nav-item">
-                        <a class="nav-link disabled text-primary font-weight-bold h5" href="#">
+                        <a class="nav-link text-primary font-weight-bold h5" href="{{ route('home') }}">
                             <i class="fas fa-columns"></i>
                             {{ trans('general.dashboard') }}
                         </a>
@@ -22,67 +22,66 @@
                             {{ trans('course.management') }}
                         </a>
                         <ul class="nav flex-column ml-4">
-                            @isset($courses)
-                                @foreach ($courses as $course)
-                                    <li class="nav-item">
-                                        <a class="nav-link text-dark" href="#">
-                                            <i class="fas fa-caret-right"></i>
-                                            {{ $course->name }}
-                                        </a>
-                                    </li>
-                                @endforeach
+                            @forelse ($courses as $course)
                                 <li class="nav-item">
-                                    <a class="nav-link" href="#">
+                                    <a class="nav-link text-dark" href="#">
                                         <i class="fas fa-caret-right"></i>
-                                        {{ trans('general.more') }} ...
+                                        {{ $course->name }}
                                     </a>
                                 </li>
-                            @else
+                                    @empty
                                 <li class="nav-item">
                                     <a class="nav-link text-dark" href="#">
                                         <i class="fas fa-caret-right"></i>
                                         {{ trans('general.empty', ['attribute' => trans('course.course')]) }}
                                     </a>
                                 </li>
-                            @endisset
-                        </ul>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-dark font-weight-bold h5">
-                            <i class="fas fa-project-diagram"></i>
-                            {{ trans('project.management') }}
-                        </a>
-                        <ul class="nav flex-column ml-4">
-                            @isset($groups)
-                                @foreach ($groups as $group)
-                                    @isset($group->project)
-                                        <li class="nav-item">
-                                            <a class="nav-link text-dark" href="#">
-                                                <i class="fas fa-caret-right"></i>
-                                                {{ $group->project->name }}
-                                            </a>
-                                        </li>
-                                    @endisset
-                                @endforeach
+                            @endforelse
+                            @if (!empty($courses))
                                 <li class="nav-item">
                                     <a class="nav-link" href="#">
                                         <i class="fas fa-caret-right"></i>
                                         {{ trans('general.more') }} ...
                                     </a>
                                 </li>
-                            @else
+                            @endif
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-dark font-weight-bold h5" href="{{ route('projects.index') }}">
+                            <i class="fas fa-project-diagram"></i>
+                            {{ trans('project.management') }}
+                        </a>
+                        <ul class="nav flex-column ml-4">
+                            @forelse ($projects as $project)
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark"
+                                        href="{{ route('projects.show', [$project->id]) }}">
+                                        <i class="fas fa-caret-right"></i>
+                                        {{ $project->name }}
+                                    </a>
+                                </li>
+                                @empty
                                 <li class="nav-item">
                                     <a class="nav-link text-dark" href="#">
                                         <i class="fas fa-caret-right"></i>
                                         {{ trans('general.empty', ['attribute' => trans('project.project')]) }}
                                     </a>
                                 </li>
-                            @endisset
+                            @endforelse
+                            @if (!empty($projects))
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('projects.index') }}">
+                                        <i class="fas fa-caret-right"></i>
+                                        {{ trans('general.more') }} ...
+                                    </a>
+                                </li>
+                            @endif
                         </ul>
                     </li>
                 </ul>
             </div>
-            <div class="col-md p-3 border bg-white mb-2 mr-3">
+            <div class="col-md-8 p-3 border bg-white mb-2">
                 <label class="h5 text-uppercase">
                     <i class="fas fa-chart-bar"></i>
                     {{ trans('general.stats') }}
@@ -125,51 +124,49 @@
                     {{ trans('project.recent') }}
                 </label>
                 <div class="row p-3">
-                    @isset($groups)
-                        @foreach ($groups as $group)
-                            @isset($group->project)
-                                <div class="col-md-4 p-1">
-                                    <div class="card">
-                                        <div class="card-body">
-                                            <h5 class="card-title font-weight-bold">
-                                                {{ $group->project->name }}
-                                                @if ($group->project->is_accepted)
-                                                    <i class="fas fa-check text-success"></i>
-                                                @endif
-                                            </h5>
-                                            <p class="card-text">
-                                                {{ $group->project->description }}
-                                            </p>
-                                        </div>
-                                        <ul class="list-group list-group-flush">
-                                            <li class="list-group-item">
-                                                <strong class="text-capitalize">
-                                                    {{ trans('course.course') }} :
-                                                </strong>
-                                                {{ $group->course->name }}
-                                            </li>
-                                            <li class="list-group-item">
-                                                <strong class="text-capitalize">
-                                                    {{ trans('group.group') }} :
-                                                </strong>
-                                                {{ $group->name }}
-                                            </li>
-                                        </ul>
-                                        <div class="card-body">
-                                            <a href="#" class="card-link">
-                                                {{ trans('general.details') }}
-                                                <i class="fas fa-angle-right"></i>
-                                            </a>
-                                        </div>
-                                    </div>
+                    @forelse ($projects as $project)
+                        <div class="col-md-4 p-1">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title font-weight-bold">
+                                        <a href="{{ route('projects.show', [$project->id]) }}">
+                                            {{ $project->name }}
+                                        </a>
+                                        @if ($project->is_accepted)
+                                            <i class="fas fa-check text-success"></i>
+                                        @endif
+                                    </h5>
+                                    <p class="card-text text-truncate">
+                                        {{ $project->description }}
+                                    </p>
                                 </div>
-                            @endisset
-                        @endforeach
-                    @else
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item">
+                                        <strong class="text-capitalize">
+                                            {{ trans('course.course') }} :
+                                        </strong>
+                                        {{ $project->group->course->name }}
+                                    </li>
+                                    <li class="list-group-item">
+                                        <strong class="text-capitalize">
+                                            {{ trans('group.group') }} :
+                                        </strong>
+                                        {{ $project->name }}
+                                    </li>
+                                </ul>
+                                <div class="card-body">
+                                    <a href="{{ route('projects.show', [$project->id]) }}" class="card-link">
+                                        {{ trans('general.details') }}
+                                        <i class="fas fa-angle-right"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        @empty
                         <label class="text-capitalize">
                             {{ trans('general.empty', ['attribute' => trans('project.project')]) }}
                         </label>
-                    @endisset
+                    @endforelse
                 </div>
             </div>
         </div>
