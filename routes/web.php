@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('lang/{lang}', 'LocalizationController@translate')->name('localization');
 Auth::routes(['register' => false]);
 Route::get('/', 'HomeController@index')->name('home');
+
 Route::resource('users', 'UserController');
 Route::get('user-deleted', 'UserController@deleted')->name('users.deleted');
 Route::get('user-restore/{id}', 'UserController@restore')->name('users.restore');
@@ -23,3 +24,5 @@ Route::get('change-password', 'PasswordController@editPassword')->name('change_p
 Route::patch('change-password', 'PasswordController@updatePassword')->name('update_password');
 Route::post('import', 'UserController@import')->name('users.import');
 Route::resource('roles', 'RoleController');
+
+Route::resource('projects', ProjectController::class)->except(['create', 'store']);
