@@ -53,7 +53,7 @@
                     <div class="input-group input-group-lg p-2">
                         <input type="submit"
                             class="form-control bg-primary text-white text-uppercase rounded-pill pl-4"
-                            value="{{ trans('login.blade.php.login') }}">
+                            value="{{ trans('general.login') }}">
                     </div>
                 </form>
                 @if (Route::has('password.request'))
