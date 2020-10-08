@@ -21,3 +21,4 @@ Route::get('user-restore/{id}', 'UserController@restore')->name('users.restore')
 Route::delete('user-force-delete/{id}', 'UserController@forceDelete')->name('users.forceDelete');
 Route::get('change-password', 'PasswordController@editPassword')->name('change_password');
 Route::patch('change-password', 'PasswordController@updatePassword')->name('update_password');
+Route::post('import', 'UserController@import')->name('users.import');
