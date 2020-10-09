@@ -43,9 +43,9 @@
                             <div>
                             </div>
                             <div class="row">
-                                <input type="text" class="form-control col-md-11 mr-2" 
+                                <input type="text" class="form-control col-md-11 mr-2"
                                     :class="{ 'is-invalid' : error }"
-                                    v-model="task_name" 
+                                    v-model="task_name"
                                     @keyup.13="addTask()">
                                 <a class="btn btn-primary col-md" @click="addTask()">
                                     <i class="far fa-calendar-plus"></i>
@@ -59,17 +59,17 @@
                         <form method="post" :action="path">
                             <input type="hidden" name="_token" :value="this.token">
                             <div v-for="(task, index) in tasks">
-                                <input v-if="task.status != null" 
-                                    type="hidden" 
-                                    :name="'tasks[' + index + '][name]'" 
+                                <input v-if="task.status != null"
+                                    type="hidden"
+                                    :name="'tasks[' + index + '][name]'"
                                     :value="task.name">
-                                <input v-if="task.status != null" 
-                                    type="hidden" 
-                                    :name="'tasks[' + index + '][task_list_id]'" 
+                                <input v-if="task.status != null"
+                                    type="hidden"
+                                    :name="'tasks[' + index + '][task_list_id]'"
                                     :value="task_list_id">
-                                <input v-if="task.status != null" 
-                                    type="hidden" 
-                                    :name="'tasks[' + index + '][is_completed]'" 
+                                <input v-if="task.status != null"
+                                    type="hidden"
+                                    :name="'tasks[' + index + '][is_completed]'"
                                     value="0">
                             </div>
                             <button type="submit" class="btn btn-primary btn-sm">
@@ -92,9 +92,9 @@
                     <div class="modal-body">
                         <form method="post" :action="'http://127.0.0.1:8000/tasks/' + this.comment_task.id + '/comments'">
                             <input type="hidden" name="_token" :value="this.token">
-                            <input type="text" 
+                            <input type="text"
                                 name="content"
-                                class='form-control' 
+                                class='form-control'
                                 placeholder="Enter comment here...">
                         </form>
                     </div>
@@ -111,12 +111,12 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                        <form method="post" 
+                        <form method="post"
                             :action="att_path"
                             enctype="multipart/form-data">
                             <input type="hidden" name="_token" :value="this.token">
                             <input type="hidden" name="task_id" :value="this.attachment_task.id">
-                            <input type="file" 
+                            <input type="file"
                                 name="urls[]"
                                 class='form-control' multiple>
                             <button type="submit" class="btn btn-primary mt-1">
@@ -169,9 +169,6 @@
         computed : {
         },
 
-<<<<<<< HEAD
-        methods : {
-=======
         methods: {
 
             trans(key, replace = {}) {
@@ -184,7 +181,6 @@
                 return translation;
             },
 
->>>>>>> attachment
             addTask()
             {
                 if (this.task_name == '') {
@@ -230,14 +226,11 @@
             {
                 this.comment_task = this.tasks[index];
             },
-<<<<<<< HEAD
-=======
 
             setAttatchmentTask(index)
             {
                 this.attachment_task = this.tasks[index];
             },
->>>>>>> attachment
         }
 
     }

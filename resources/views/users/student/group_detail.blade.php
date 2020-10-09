@@ -74,26 +74,16 @@
         <div class="project-infor mt-2">
             <label class="font-weight-bold">{{ trans('group.name_project') }}: {{ $group->project->name }}</label><br>
             <label class="font-weight-bold">{{ trans('group.des_project') }}: {{ $group->project->description }}</label><br>
-            <label class="font-weight-bold">{{ trans('group.status_project') }}: {{ $group->project->is_accepted }}</label><br>
+            <label class="font-weight-bold">{{ trans('group.status_project') }}:
+                {{ $group->project->is_accepted == null ||  $group->project->is_accepted == false ? trans('project.pending') : trans('project.approved') }}
+            </label><br>
             <span><a href="{{ route('projects.show', $group->project->id) }}">{{ trans('general.details') }}</a></span>
         </div>
     @else
         @if ($leader && auth()->user()->id == $leader->id)
-            <a class="btn btn-success" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+            <a class="btn btn-success"  href="{{ route('groups.projects.create', $group->id) }}">
                 {{ trans('group.addProject') }}
             </a>
-            <div class="collapse" id="collapseExample">
-              <div class="card card-body">
-                <form action="#" method="post">
-                    <label for="name">{{ trans('group.name_project') }}</label>
-                    <input type="text" name="name" class="form-control" required>
-                    <label for="description">{{ trans('group.des_project') }}</label>
-                    <textarea name="description" class="form-control" id="" cols="30" rows="10">
-                    </textarea>
-                    <button type="submit" class="btn btn-primary mt-3">{{ trans('general.save') }}</button>
-                </form>
-              </div>
-            </div>
         @else
             <p>{{ trans('general.empty', ['attribute' => trans('project.project')]) }}</p>
         @endif

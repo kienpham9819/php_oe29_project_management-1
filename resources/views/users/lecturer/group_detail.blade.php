@@ -132,7 +132,16 @@
         <div class="project-infor mt-2">
             <label class="font-weight-bold">{{ trans('group.name_project') }}: {{ $group->project->name }}</label><br>
             <label class="font-weight-bold">{{ trans('group.des_project') }}: {{ $group->project->description }}</label><br>
-            <label class="font-weight-bold">{{ trans('group.status_project') }}: {{ $group->project->is_accepted }}</label><br>
+            <label class="font-weight-bold">{{ trans('group.status_project') }}:
+                {{ $group->project->is_accepted == null ||  $group->project->is_accepted == false ? trans('project.pending') : trans('project.approved') }}
+            </label><br>
+            <form action="{{ route('projects.toggle', [$group->project->id]) }}" method="POST">
+                @csrf
+                @method('patch')
+                <button class="btn btn-primary">
+                    {{ $group->project->is_accepted == null ||  $group->project->is_accepted == false ? trans('project.approved') : trans('project.pending') }}
+                </button>
+            </form>
             <span><a href="{{ route('projects.show', $group->project->id) }}">{{ trans('general.details') }}</a></span>
         </div>
     @else

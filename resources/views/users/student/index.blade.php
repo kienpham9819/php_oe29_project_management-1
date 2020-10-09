@@ -21,6 +21,32 @@
                             <i class="fas fa-graduation-cap"></i>
                             {{ trans('course.management') }}
                         </a>
+                        <ul class="nav flex-column ml-4">
+                            @isset ($newCourses)
+                                @foreach ($newCourses as $course)
+                                    <li class="nav-item">
+                                        <a class="nav-link text-dark" href="{{ route('students.courseDetail', $course->id) }}">
+                                            <i class="fas fa-caret-right"></i>
+                                            {{ $course->name }}
+                                        </a>
+                                    </li>
+                                @endforeach
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('students.courseList') }}">
+                                        <i class="fas fa-caret-right"></i>
+                                        {{ trans('general.more') }}
+                                        ...
+                                    </a>
+                                </li>
+                            @else
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" href="#">
+                                        <i class="fas fa-caret-right"></i>
+                                        {{ trans('general.empty', ['attribute' => trans('course.course')]) }}
+                                    </a>
+                                </li>
+                            @endisset
+                        </ul>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link text-dark font-weight-bold h5" href="{{ route('projects.index') }}">

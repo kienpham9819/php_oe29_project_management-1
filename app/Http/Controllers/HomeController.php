@@ -33,7 +33,7 @@ class HomeController extends Controller
         $groups = $user->groups()
             ->has('project')
             ->pluck('groups.id');
-        $projects = Project::whereIn('id', $groups)
+        $projects = Project::whereIn('group_id', $groups)
             ->with('group.course')
             ->orderBy('updated_at', 'desc')->get();
         $approved = $projects->where('is_accepted', true)->count();

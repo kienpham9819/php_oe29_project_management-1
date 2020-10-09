@@ -21,7 +21,7 @@
             <div class="container">
                 <img src="{{ asset(config('app.logo')) }}">
                 <span class="ml-2 mr-2 text-white font-weight-bold"> | </span>
-                <a class="navbar-brand text-white font-weight-bold text-uppercase" href="{{ route('home') }}">
+                <a class="navbar-brand text-white font-weight-bold text-uppercase" href="#">
                     {{ config('app.name') }}
                 </a>
 
