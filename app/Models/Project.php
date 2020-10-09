@@ -9,6 +9,11 @@ class Project extends Model
 {
     use SoftDeletes;
 
+    protected $fillable = [
+        'name',
+        'description',
+    ];
+
     public function group()
     {
         return $this->belongsTo(Group::class);
@@ -17,5 +22,10 @@ class Project extends Model
     public function taskLists()
     {
         return $this->hasMany(TaskList::class);
+    }
+
+    public function tasks()
+    {
+        return $this->hasManyThrough(Task::class, TaskList::class);
     }
 }
