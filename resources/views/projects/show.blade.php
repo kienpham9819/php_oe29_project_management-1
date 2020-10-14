@@ -71,7 +71,7 @@
                                         <div class="modal-header">
                                             <h5 class="modal-title" id="member">{{ trans('project.member_list') }}</h5>
                                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
+                                                <span aria-hidden="true">&times;</span>
                                             </button>
                                         </div>
                                         <div class="modal-body">
@@ -145,21 +145,34 @@
                         </div>
                     </div>
                 </div>
-                <hr>
-                <a class="h5 text-uppercase text-dark" href="{{ route('projects.edit', [$project->id]) }}">
-                    <i class="far fa-edit"></i>
-                    {{ trans('project.edit') }}
-                </a>
-                <hr>
-                <a class="h5 text-uppercase text-dark" href="#">
-                    <i class="fas fa-list"></i>
-                    {{ trans('list.view') }}
-                </a>
-                <hr>
-                <a class="h5 text-uppercase text-dark" href="#" data-toggle="modal" data-target="#deleteModal">
-                    <i class="far fa-trash-alt"></i>
-                    {{ trans('general.delete') }}
-                </a>
+                <table class="table table-hover mt-3">
+                    <tbody>
+                        <tr>
+                            <td>
+                                <a class="h5 text-uppercase text-dark" href="{{ route('projects.edit', [$project->id]) }}">
+                                    <i class="far fa-edit"></i>
+                                    {{ trans('project.edit') }}
+                                </a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <a class="h5 text-uppercase text-dark" href="{{ route('projects.task-lists.index', [$project->id]) }}">
+                                    <i class="fas fa-list"></i>
+                                    {{ trans('list.view') }}
+                                </a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <a class="h5 text-uppercase text-dark" href="#" data-toggle="modal" data-target="#deleteModal">
+                                    <i class="far fa-trash-alt"></i>
+                                    {{ trans('general.delete') }}
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
                 <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteLabel" aria-hidden="true">
                     <div class="modal-dialog" role="document">
                         <div class="modal-content">

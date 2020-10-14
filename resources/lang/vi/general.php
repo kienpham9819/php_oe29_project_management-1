@@ -16,9 +16,11 @@ return [
     'logout' => 'Đăng xuất',
     'more' => 'Thêm',
     'name' => 'Tên',
+    'none' => 'N/A',
     'save' => 'Lưu trữ',
     'setting' => 'Cài đặt tài khoản',
     'stats' => 'Thông số',
     'status' => 'Trạng thái',
+    'update' => 'Cập nhập',
     'vietnamese' => 'Tiếng Việt',
 ];

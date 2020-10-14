@@ -16,9 +16,11 @@ return [
     'logout' => 'Logout',
     'more' => 'More',
     'name' => 'Name',
+    'none' => 'N/A',
     'save' => 'Save',
     'setting' => 'Account setting',
     'stats' => 'Statistic',
     'status' => 'Status',
+    'update' => 'Update',
     'vietnamese' => 'Tiếng Việt',
 ];
