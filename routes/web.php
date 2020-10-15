@@ -28,3 +28,14 @@ Route::resource('roles', 'RoleController');
 Route::resource('projects', ProjectController::class)->except(['create', 'store']);
 
 Route::resource('projects.task-lists', TaskListController::class);
+
+Route::resource('courses', 'CourseController');
+Route::post('importCourse', 'CourseController@importCourse')->name('courses.importCourse');
+Route::get('restore-course/{id}', 'CourseController@restoreCourse')->name('courses.restore');
+Route::post('addUser/{course}', 'CourseController@addUserToCourse')->name('courses.addUser');
+Route::delete('deleteUser/{course}/{user}', 'CourseController@deleteUserFromCourse')->name('courses.deleteUser');
+
+Route::resource('courses.groups', 'GroupController')->shallow();
+Route::post('addUserToGroup/{group}', 'GroupController@addUserToGroup')->name('groups.addUser');
+Route::delete('deleteUserOfGroup/{group}/{user}', 'GroupController@deleteUserFromGroup')->name('groups.deleteUser');
+Route::post('addLeaderToGroup/{group}', 'GroupController@addLeaderToGroup')->name('groups.addLeader');

@@ -31,19 +31,19 @@
             <form action="{{ route('courses.store') }}" method="post" role="form">
                 @csrf
                 <div class="form-group">
-                    <label for="name_class">{{ trans('general.name') }}</label>
-                    @error('name_class')
+                    <label for="className">{{ trans('general.name') }}</label>
+                    @error('className')
                         <span class="text-danger">{{ $message }}</span>
                     @enderror
                     <input type="text"
                         class="form-control"
-                        name="name_class" id="name_class"
+                        name="className" id="className"
                         placeholder="{{ trans('course.type_name') }}"
-                        value="{{ old('name_class') }}">
+                        value="{{ old('className') }}">
                 </div>
                 <div class="form-group">
                     <label class="text-capitalize">{{ trans('course.lecturer_id') }}</label>
-                    @error('lecturer_id')
+                    @error('lecturerId')
                         <span class="text-danger">{{ $message }}</span>
                     @enderror
                     <input class="form-control" id="search_lecturer" type="text" placeholder="{{ trans('course.type_lecturer') }}">
@@ -52,9 +52,9 @@
                             <li class="list-group-item">
                                 <input type="radio"
                                     value="{{ $lecture->id }}"
-                                    name="lecturer_id"
+                                    name="lecturerId"
                                     id="{{ $lecture->id }}"
-                                    {{ old('lecturer_id') == $lecture->id ? 'checked' : '' }}>
+                                    {{ old('lecturerId') == $lecture->id ? 'checked' : '' }}>
                                 <label for="{{ $lecture->id }}" class="ml-2">{{ $lecture->email }}</label>
                             </li>
                         @empty
@@ -66,12 +66,12 @@
                 <button type="submit" class="btn btn-primary">{{ trans('general.save') }}</button>
             </form>
             <hr>
-            @if ($errors->any() && !$errors->hasAny(['name_class', 'lecturer_id']))
+            @if ($errors->any() && !$errors->hasAny(['className', 'lecturerId']))
                 @foreach ($errors->all() as $key => $error)
                     <span class="text-danger">{{ $error }}</span></br>
                 @endforeach
             @endif
-            <form action="#" method="post" enctype="multipart/form-data">
+            <form action="{{ route('courses.importCourse') }}" method="post" enctype="multipart/form-data">
                 @csrf
                 <div class="input-group mb-3">
                     <input type="file" name="file" required aria-label="file" accept=".csv,.xlsx,.xls">

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use App\Models\Role;
+use App\Models\Course;
 use App\Http\Requests\UserRequest;
 use App\Http\Requests\EditUserRequest;
 use App\Imports\UsersImport;
@@ -26,29 +27,32 @@ class UserController extends Controller
 
     public function index()
     {
-        $users = User::orderBy('updated_at', 'DESC')->paginate(config('paginate.record_number'));
+        $users = User::orderBy('updated_at', 'desc')->paginate(config('paginate.record_number'));
         $roles = Role::all();
+        $newCourses = getLatestCourses();
 
-        return view('users.admin.list', compact(['users', 'roles']));
+        return view('users.admin.list', compact(['users', 'roles', 'newCourses']));
     }
 
     public function deleted()
     {
         $users = User::onlyTrashed()->paginate(config('paginate.record_number'));
+        $roles = Role::all();
+        $newCourses = getLatestCourses();
 
-        return view('users.admin.restore', compact(['users']));
+        return view('users.admin.restore', compact(['users', 'roles', 'newCourses']));
     }
 
-    public function restore(User $user)
+    public function restore($id)
     {
-        $user->restore();
+        User::withTrashed()->where('id', $id)->restore();
 
         return redirect()->route('users.deleted');
     }
 
-    public function forceDelete(User $user)
+    public function forceDelete($id)
     {
-        $user->forceDelete();
+        User::withTrashed()->where('id', $id)->forceDelete();
 
         return redirect()->route('users.deleted')
             ->with('message', trans('user.noti_delete'));
@@ -80,8 +84,9 @@ class UserController extends Controller
     public function edit(User $user)
     {
         $roles = Role::all();
+        $newCourses = getLatestCourses();
 
-        return view('users.admin.edit', compact(['user', 'roles']));
+        return view('users.admin.edit', compact(['user', 'roles', 'newCourses']));
     }
 
     /**

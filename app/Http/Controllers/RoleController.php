@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Role;
+use App\Models\Course;
 use App\Models\Permission;
 use Illuminate\Support\Str;
 use App\Http\Requests\RoleRequest;
@@ -22,9 +23,10 @@ class RoleController extends Controller
 
     public function index()
     {
-        $roles = Role::withTrashed()->get();
+        $roles = Role::all();
+        $newCourses = getLatestCourses();
 
-        return view('users.admin.role_list', compact(['roles']));
+        return view('users.admin.role_list', compact(['roles', 'newCourses']));
     }
     /**
      * Show the form for editing the specified resource.
@@ -36,8 +38,9 @@ class RoleController extends Controller
     public function edit(Role $role)
     {
         $permissions = Permission::all();
+        $newCourses = getLatestCourses();
 
-        return view('users.admin.role_edit', compact(['role', 'permissions']));
+        return view('users.admin.role_edit', compact(['role', 'permissions', 'newCourses']));
     }
 
     /**

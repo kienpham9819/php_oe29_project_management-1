@@ -50,7 +50,7 @@ class User extends Authenticatable
 
     public function groups()
     {
-        return $this->belongsToMany(Group::class);
+        return $this->belongsToMany(Group::class)->withPivot('is_leader');
     }
 
     public function teaches()

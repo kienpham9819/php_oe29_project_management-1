@@ -138,7 +138,24 @@
             <span><a href="{{ route('projects.show', $group->project->id) }}">{{ trans('general.details') }}</a></span>
         </div>
     @else
-       <p>{{ trans('general.empty', ['attribute' => trans('project.project')]) }}</p>
+        @if(auth()->user()->hasRole('leader'))
+            <a class="btn btn-success" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+                {{ trans('group.addProject') }}
+            </a>
+            <div class="collapse" id="collapseExample">
+              <div class="card card-body">
+                <form action="#" method="post">
+                    <label for="name">{{ trans('group.name_project') }}</label>
+                    <input type="text" name="name" class="form-control" required>
+                    <label for="description">{{ trans('group.des_project') }}</label>
+                    <textarea name="description" class="form-control" id="" cols="30" rows="10">
+                    </textarea>
+                </form>
+              </div>
+            </div>
+        @else
+            <p>{{ trans('general.empty', ['attribute' => trans('project.project')]) }}</p>
+        @endif
     @endisset
 
 @endsection
