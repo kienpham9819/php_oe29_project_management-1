@@ -40,7 +40,7 @@ class User extends Authenticatable
 
     public function roles()
     {
-        return $this->belongsToMany(Role::class)->withPivot('course_id');
+        return $this->belongsToMany(Role::class);
     }
 
     public function courses()
@@ -71,5 +71,15 @@ class User extends Authenticatable
     public function tasks()
     {
         return $this->hasManyThrough(Task::class, TaskList::class);
+    }
+
+    public function hasRole($roleName)
+    {
+        $role = Role::where('slug', $roleName)->first();
+        if ($role) {
+            return $this->roles->contains($role);
+        }
+
+        return false;
     }
 }
