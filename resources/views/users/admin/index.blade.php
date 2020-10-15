@@ -11,7 +11,7 @@
             <div class="col-md-4 mb-2 text-capitalize">
                 <ul class="nav flex-column border-left">
                     <li class="nav-item">
-                        <a class="nav-link disabled text-dark font-weight-bold h5" href="#">
+                        <a class="nav-link @yield('active-user') font-weight-bold h5" href="{{ route('users.index') }}">
                             <i class="fas fa-users"></i>
                             {{ trans('user.management') }}
                         </a>
@@ -31,28 +31,28 @@
                         </ul>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-dark font-weight-bold h5" href="#">
+                        <a class="nav-link @yield('active-role') font-weight-bold h5" href="{{ route('roles.index') }}">
                             <i class="fas fa-user-tag"></i>
                             {{ trans('role.role') }}
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link disabled text-dark font-weight-bold h5" href="#">
+                        <a class="nav-link @yield('active-course') font-weight-bold h5" href="{{ route('courses.index') }}">
                             <i class="fas fa-school"></i>
                             {{ trans('course.management') }}
                         </a>
                         <ul class="nav flex-column ml-4">
-                            @isset ($courses)
-                                @foreach ($courses as $course)
+                            @isset ($newCourses)
+                                @foreach ($newCourses as $course)
                                     <li class="nav-item">
-                                        <a class="nav-link text-dark" href="{{ route('courses.show, $course->id') }}">
+                                        <a class="nav-link text-dark" href="{{ route('courses.show', $course->id) }}">
                                             <i class="fas fa-caret-right"></i>
                                             {{ $course->name }}
                                         </a>
                                     </li>
                                 @endforeach
                                 <li class="nav-item">
-                                    <a class="nav-link" href="#">
+                                    <a class="nav-link" href="{{ route('courses.index') }}">
                                         <i class="fas fa-caret-right"></i>
                                         {{ trans('general.more') }}
                                         ...

@@ -6,9 +6,13 @@
     </li>
 @endsection
 
+@section('active-user', 'text-dark')
+@section('active-role', 'text-primary')
+@section('active-course', 'text-dark')
+
 @section('admin')
     @if (session('message'))
-        <div class="alert alert-success">
+        <div class="alert alert-success noti">
             <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
             <strong>{{ session('message') }}</strong>
         </div>
