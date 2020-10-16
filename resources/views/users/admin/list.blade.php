@@ -6,9 +6,13 @@
     </li>
 @endsection
 
+@section('active-user', 'text-primary')
+@section('active-role', 'text-dark')
+@section('active-course', 'text-dark')
+
 @section('admin')
     @if (session('message'))
-        <div class="alert alert-success">
+        <div class="alert alert-success noti">
             <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
             <strong>{{ session('message') }}</strong>
         </div>
@@ -72,6 +76,50 @@
                         placeholder="{{ trans('user.retype_password') }}"
                         value="{{ old('password_confirm') }}">
                 </div>
+
+                <div class="form-group">
+                    @error('roles')
+                        <span class="text-danger">{{ $message }}</span>
+                    @enderror
+                    <br>
+                    <div class="table-responsive">
+                        <table class="table table-hover table-bordered">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th>#</th>
+                                    <th>{{ trans('role.name') }}</th>
+                                    <th>{{ trans('role.option') }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @isset ($roles)
+                                    @foreach ($roles as $key => $role)
+                                        <tr>
+                                            <td>{{ ++$key }}</td>
+                                            <td>
+                                                <label for="{{ $role->slug }}">
+                                                    {{ $role->name }}
+                                                </label>
+                                            </td>
+                                            <td>
+                                                <input type="checkbox"
+                                                    id="{{ $role->slug }}"
+                                                    name="roles[{{ $role->slug }}]"
+                                                    value="{{ $role->id }}">
+                                                @error('roles.' . $role->slug)
+                                                    <span class="text-danger">
+                                                        {{ $message }}
+                                                    </span>
+                                                @enderror
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                @endisset
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
                 <button type="submit" class="btn btn-primary">{{ trans('user.save') }}</button>
             </form>
             <hr>
@@ -127,13 +175,29 @@
                             </a>
                         </td>
                         <td>
-                            <form action="{{ route('users.destroy', $user->id) }}" method="post">
-                                @csrf
-                                @method('delete')
-                                <button type="submit" class="border-0 bg-white">
-                                    <i class="fas fa-user-minus text-danger"></i>
-                                </button>
-                            </form>
+                            <a data-toggle="modal" href='#delete{{ $user->id }}'>
+                                <i class="fas fa-user-minus text-danger"></i>
+                            </a>
+                            <div class="modal fade" id="{{ 'delete' . $user->id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title text-capitalize" id="exampleModalLabel">{{ trans('general.confirm') }}</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ trans('general.close') }}</button>
+                                            <form action="{{ route('users.destroy', $user->id) }}"method="post">
+                                                @csrf
+                                                @method('delete')
+                                                <button type="submit" class="btn btn-danger">{{ trans('general.delete') }}</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </td>
                     </tr>
                 @empty

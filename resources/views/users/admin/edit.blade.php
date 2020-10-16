@@ -9,6 +9,10 @@
     </li>
 @endsection
 
+@section('active-user', 'text-primary')
+@section('active-role', 'text-dark')
+@section('active-course', 'text-dark')
+
 @section('admin')
     <label class="h3 text-uppercase">
         {{ trans('user.edit_title') }}
