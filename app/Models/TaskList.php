@@ -9,6 +9,11 @@ class TaskList extends Model
 {
     use SoftDeletes;
 
+    protected $dates = [
+        'due_date',
+        'start_date',
+    ];
+
     public function project()
     {
         return $this->belongsTo(Project::class);
@@ -22,5 +27,10 @@ class TaskList extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function comments()
+    {
+        return $this->hasManyThrough(Comment::class, Task::class);
     }
 }
