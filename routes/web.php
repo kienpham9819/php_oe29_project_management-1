@@ -26,3 +26,5 @@ Route::post('import', 'UserController@import')->name('users.import');
 Route::resource('roles', 'RoleController');
 
 Route::resource('projects', ProjectController::class)->except(['create', 'store']);
+
+Route::resource('projects.task-lists', TaskListController::class);
