@@ -29,3 +29,20 @@ window.Vue = require('vue');
 const app = new Vue({
     el: '#app',
 });
+
+$(document).ready(function () {
+    $("#search_user").on("keyup", function () {
+        var value = $(this).val().toLowerCase();
+        $(".dropdown-menu li").filter(function() {
+            $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+        });
+    });
+
+    $("#search_lecturer").on("keyup", function () {
+        var value = $(this).val().toLowerCase();
+        $("#listLecturer li").filter(function () {
+            $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+        });
+    });
+    $('.noti').delay(2000).slideUp();
+});

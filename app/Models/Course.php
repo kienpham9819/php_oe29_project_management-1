@@ -9,6 +9,11 @@ class Course extends Model
 {
     use SoftDeletes;
 
+    protected $fillable = [
+        'name',
+        'user_id',
+    ];
+
     public function groups()
     {
         return $this->hasMany(Group::class);
