@@ -200,6 +200,20 @@
                 </div>
             </div>
         </div>
+        <div class="">
+            <a class="btn btn-primary text-uppercase w-100" data-toggle="collapse" href="#chart" role="button" aria-expanded="false" aria-controls="chart">
+                {{ trans('general.chart') }}
+            </a>
+            <div class="collapse bg-white p-2 border mt-1" id="chart">
+                <div class="container p-2 chart-frame">
+                    {{ $chart->container() }}
+                    {{ $chart->script() }}
+                </div>
+                <p class="font-weight-bold mt-2 text-center text-uppercase">
+                    {{ trans('list.chart') . ' : ' . $taskList->name }}
+                </p>
+            </div>
+        </div>
         <div class="row p-3">
             <div class="col-md bg-white border p-3">
                 <table class="table table-hover table-bordered mt-3">
