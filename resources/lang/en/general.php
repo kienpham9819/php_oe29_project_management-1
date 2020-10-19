@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'chart' => 'Chart',
     'close' => 'Close',
     'confirm' => 'confirm',
     'created_at' => 'Created at',

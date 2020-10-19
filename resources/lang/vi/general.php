@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'chart' => 'Biểu đồ',
     'close' => 'Đóng',
     'confirm' => 'Xác nhận',
     'created_at' => 'Ngày khởi tạo',

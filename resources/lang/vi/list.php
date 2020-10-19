@@ -3,6 +3,7 @@
 return [
     'add' => 'Thêm danh sách công việc mới',
     'assign' => 'Người được giao',
+    'chart' => 'Tần suất hoạt động',
     'completed' => 'Hoàn thành',
     'due_date' => 'Ngày hết hạn',
     'edit' => 'Sửa danh sách công việc',
