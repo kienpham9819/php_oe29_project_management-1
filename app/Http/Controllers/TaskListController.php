@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Charts\ActivityChart;
 use App\Models\TaskList;
 use App\Models\Project;
 use App\Http\Requests\TaskListRequest;
@@ -73,6 +74,7 @@ class TaskListController extends Controller
     public function show(Project $project, TaskList $taskList)
     {
         $taskList->load('tasks.comments', 'tasks.attachments');
+        $chart = $this->createActivityChart($taskList);
         $completed = $taskList->tasks->where('is_completed', 1)->count();
         $unfinished = $taskList->tasks->where('is_completed', 0)->count();
 
@@ -81,6 +83,7 @@ class TaskListController extends Controller
             'project',
             'completed',
             'unfinished',
+            'chart',
         ]));
     }
 
@@ -139,5 +142,59 @@ class TaskListController extends Controller
         $taskList->delete();
 
         return redirect()->route('projects.task-lists.index', [$project->id]);
+    }
+
+    private function createActivityChart(TaskList $taskList)
+    {
+        $taskList->load('tasks');
+        $chart = new ActivityChart;
+        $labels = [];
+        $data = [];
+        $tomorrow = Carbon::tomorrow()->toDateString();
+        $date = Carbon::today()->subWeek();
+
+        $tasks = $taskList->tasks()
+            ->where('is_completed', 1)
+            ->orderBy('tasks.updated_at', 'desc')
+            ->select(DB::raw('count(tasks.updated_at) as activities, date(`tasks`.`updated_at`) as date'))
+            ->groupBy('date')
+            ->get();
+
+        do {
+            $date = $date->addDay();
+            $labels[] = $date->toDateString();
+            $hasData = false;
+            foreach($tasks as $task) {
+                if ($task->date == $date->toDateString()) {
+                    $data[] = $task->activities;
+                    $hasData = true;
+                    break;
+                }
+            }
+            if (!$hasData) {
+                $data[] = config('app.default');
+            }
+        }
+        while ($tomorrow != $date->toDateString());
+        $chart->labels($labels);
+        $chart->dataset(trans('task.completed') , 'line', $data)->options([
+            'borderColor' => config('charts.default_color.blue'),
+            'backgroundColor' => config('charts.default_color.blue'),
+            'fill' => 'true',
+            'lineTension' => config('app.default'),
+        ]);
+        $chart->options([
+            'scales' => [
+                'yAxes' => [
+                    [
+                        'ticks' => [
+                            'beginAtZero' => true,
+                            'stepSize' => 1,
+                        ],
+                    ],
+                ],
+            ],
+        ]);
+        return $chart;
     }
 }
