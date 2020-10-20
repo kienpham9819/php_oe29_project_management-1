@@ -21,19 +21,19 @@
         @csrf
         @method('patch')
         <div class="form-group">
-            <label for="name_class">{{ trans('general.name') }}</label>
-            @error('name_class')
+            <label for="className">{{ trans('general.name') }}</label>
+            @error('className')
                 <span class="text-danger">{{ $message }}</span>
             @enderror
             <input type="text"
                 class="form-control"
-                name="name_class" id="name_class"
+                name="className" id="className"
                 placeholder="{{ trans('course.type_name') }}"
-                value="{{ old('name_class', $course->name) }}">
+                value="{{ old('className', $course->name) }}">
         </div>
         <div class="form-group">
             <label for="id_lecturer" class="text-capitalize">{{ trans('course.lecturer_id') }}</label>
-            @error('lecturer_id')
+            @error('lecturerId')
                 <span class="text-danger">{{ $message }}</span>
             @enderror
             <input class="form-control" id="search_lecturer" type="text" placeholder="{{ trans('course.type_lecturer') }}">
@@ -42,9 +42,9 @@
                     <li class="list-group-item">
                         <input type="radio"
                             value="{{ $lecture->id }}"
-                            name="lecturer_id"
+                            name="lecturerId"
                             id="{{ $lecture->id }}"
-                            {{ old('lecturer_id', $course->user_id) == $lecture->id ? 'checked' : ''}}>
+                            {{ old('lecturerId', $course->user_id) == $lecture->id ? 'checked' : ''}}>
                         <label for="{{ $lecture->id }}" class="ml-2">{{ $lecture->email }}</label>
                     </li>
                 @empty
