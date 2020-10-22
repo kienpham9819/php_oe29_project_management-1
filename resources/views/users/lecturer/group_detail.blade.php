@@ -1,22 +1,20 @@
-@extends('users.admin.index')
+@extends('users.lecturer.index')
 
 @section('breadcrumb')
     <li class="breadcrumb-item text-capitalize" aria-current="page">
-       <a href="{{ route('courses.index') }}">{{ trans('course.title_list') }}</a>
+        <a href="{{ route('lecturers.courseList') }}">
+            {{ trans('general.dashboard') }}
+        </a>
     </li>
     <li class="breadcrumb-item text-capitalize" aria-current="page">
-        <a href="{{ route('courses.show', $group->course_id) }}">{{ $group->course_id }}</a>
+        <a href="{{ route('lecturers.courseDetail', $group->course_id) }}">{{ $group->course_id }}</a>
     </li>
     <li class="breadcrumb-item active text-capitalize" aria-current="page">
         {{ trans('group.detail') . '-' . $group->name }}
     </li>
 @endsection
 
-@section('active-user', 'text-dark')
-@section('active-role', 'text-dark')
-@section('active-course', 'text-primary')
-
-@section('admin')
+@section('user')
     @if (session('message'))
         <div class="alert alert-success noti">
             <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
@@ -140,5 +138,4 @@
     @else
         <p>{{ trans('general.empty', ['attribute' => trans('project.project')]) }}</p>
     @endisset
-
 @endsection
