@@ -19,4 +19,5 @@ return [
     'noti_deleteUser' => 'User has been deleted',
     'status_project' => 'Status',
     'type_name' => 'Type name of group',
+    'unique' => 'This group has been existed in this class',
 ];

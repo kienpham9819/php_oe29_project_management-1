@@ -9,6 +9,7 @@ return [
     'deleted' => 'Deleted',
     'edit' => 'Edit',
     'edit_title' => 'Edit Course',
+    'group' => 'Your group',
     'groups' => 'Groups',
     'import' => 'Import excel',
     'invalid' => 'User is invalid',

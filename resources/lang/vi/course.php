@@ -9,6 +9,7 @@ return [
     'deleted' => 'Đã xóa',
     'edit' => 'Sửa',
     'edit_title' => 'Chỉnh sửa thông tin lớp học',
+    'group' => 'Nhóm của  bạn',
     'groups' => 'Danh sách các nhóm',
     'import' => 'Nhập từ file excel',
     'invalid' => 'Người dùng khoogn hợp lệ',
