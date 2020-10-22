@@ -19,4 +19,5 @@ return [
     'noti_deleteUser' => 'Đã xóa thành viên khỏi nhóm',
     'status_project' => 'Trạng thái dự án',
     'type_name' => 'Nhập tên nhóm',
+    'unique' => 'Nhóm đã tồn tại trong lớp',
 ];
