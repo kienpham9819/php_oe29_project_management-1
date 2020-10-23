@@ -39,7 +39,7 @@
                             </div>
                             <div class="row">
                                 <input type="text" class="form-control col-md-11 mr-2" 
-                                    :class="{ 'is-invalid' : error }" 
+                                    :class="{ 'is-invalid' : error }"
                                     v-model="task_name" 
                                     @keyup.13="addTask()">
                                 <a class="btn btn-primary col-md" @click="addTask()">
@@ -85,7 +85,7 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                        <form method="post" action="/">
+                        <form method="post" :action="'http://127.0.0.1:8000/tasks/' + this.comment_task.id + '/comments'">
                             <input type="hidden" name="_token" :value="this.token">
                             <input type="text" 
                                 name="content"
@@ -108,11 +108,11 @@
                 })
         },
 
-        props: {
-            render: {required : true},
-            path: {required : true},
-            token: {required : true},
-            task_list_id: {required : true},
+        props : {
+            render : {required : true},
+            path : {required : true},
+            token : {required : true},
+            task_list_id : {required : true},
         },
 
         data() {
@@ -121,6 +121,7 @@
                 task_name : '',
                 error : false,
                 comment_task : {
+                    id : 0,
                     name : '',
                 },
             }
@@ -129,7 +130,7 @@
         computed : {
         },
 
-        methods: {
+        methods : {
             addTask()
             {
                 if (this.task_name == '') {
@@ -145,6 +146,7 @@
                     this.task_name = '';
                 }
             },
+
             deleteTask(index)
             {
                 if (this.tasks[index].status == null) {
@@ -158,6 +160,7 @@
                     this.tasks.splice(index, 1);
                 }
             },
+
             toggle(index)
             {
                 if (this.tasks[index].status == null) {
@@ -168,11 +171,12 @@
                         });
                 }
             },
+
             setCommentTask(index)
             {
                 this.comment_task = this.tasks[index];
-            }
-        },
+            },
+        }
 
     }
 </script>
