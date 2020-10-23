@@ -9,6 +9,12 @@ class Task extends Model
 {
     use SoftDeletes;
 
+    protected $fillable = [
+        'name',
+        'task_list_id',
+        'is_completed',
+    ];
+
     public function attachments()
     {
         return $this->hasMany(Attachment::class);

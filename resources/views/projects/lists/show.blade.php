@@ -170,6 +170,15 @@
                                 </a>
                             </td>
                         </tr>
+                        <tr>
+                            <td>
+                                <calendar locale="{{ session()->get('lang', config('app.locale')) }}"
+                                    due_y="{{ date('Y', strtotime($taskList->due_date)) }}"
+                                    due_m="{{ date('m', strtotime($taskList->due_date)) }}"
+                                    due_d="{{ date('d', strtotime($taskList->due_date)) }}">
+                                </calendar>
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
                 <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteLabel" aria-hidden="true">
@@ -216,66 +225,49 @@
         </div>
         <div class="row p-3">
             <div class="col-md bg-white border p-3">
-                <table class="table table-hover table-bordered mt-3">
-                    <tbody>
-                        @forelse ($taskList->tasks as $task)
-                            <tr>
-                                <td>
-                                    <input type="checkbox" name="tasks[]" @if ($task->is_completed) checked @endif>
-                                    <a data-toggle="modal" data-target="#info{{ $task->id }}">
-                                        @if ($task->is_completed)
-                                            <del class="text-secondary">
-                                                {{ $task->name }}
-                                            </del>
-                                        @else
-                                            {{ $task->name }}
-                                        @endif
-                                    </a>
-                                    <div class="modal fade" id="info{{ $task->id }}" tabindex="-1" role="dialog" aria-labelledby="member" aria-hidden="true">
-                                        <div class="modal-dialog modal-dialog-centered" role="document">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title" id="member">{{ $task->name }}</h5>
-                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                        <span aria-hidden="true">&times;</span>
-                                                    </button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    @forelse ($task->comments as $comment)
-                                                        <a class="font-weight-bold text-primary">
-                                                            {{ $comment->user->name }}
-                                                        </a>
-                                                        <p>
-                                                            {{ $comment->content }}
-                                                        </p>
-                                                        <hr>
-                                                    @empty
-                                                        <span class="text-capitalize">
-                                                            {{ trans('general.empty', ['attribute' => trans('comment.comment')]) }}
-                                                        </span>
-                                                    @endforelse
-                                                </div>
-                                            </div>
+                <task-input
+                    render="{{ route('task-lists.tasks.index', [$taskList->id]) }}"
+                    path="{{ route('task-lists.tasks.store', [$taskList->id]) }}"
+                    token="{{ csrf_token() }}"
+                    task_list_id="{{ $taskList->id }}">
+                </task-input>
+                <p>
+                    @foreach ($errors as $error)
+                        <span class="text-danger">
+                            {{ $error }}
+                        </span>
+                    @endforeach
+                </p>
+                @forelse ($taskList->tasks as $task)
+                            <div class="modal fade" id="info{{ $task->id }}" tabindex="-1" role="dialog" aria-labelledby="member" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="member">{{ $task->name }}</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            @forelse ($task->comments as $comment)
+                                                <a class="font-weight-bold text-primary">
+                                                    {{ $comment->user->name }}
+                                                </a>
+                                                <p>
+                                                    {{ $comment->content }}
+                                                </p>
+                                                <hr>
+                                            @empty
+                                                <span class="text-capitalize">
+                                                    {{ trans('general.empty', ['attribute' => trans('comment.comment')]) }}
+                                                </span>
+                                            @endforelse
                                         </div>
                                     </div>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td class="text-capitalize">
-                                    {{ trans('general.empty', ['attribute' => trans('task.task')]) }}
-                                </td>
-                            </tr>
-                        @endforelse
-                        <tr>
-                            <td>
-                                <button class="btn btn-sm btn-primary">
-                                    {{ trans('general.update') }}
-                                </button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                                </div>
+                            </div>
+                @empty
+                @endforelse
             </div>
         </div>
     </div>

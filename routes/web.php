@@ -49,3 +49,15 @@ Route::get('course-detail-lecturer/{course}', 'LecturerController@showDetailCour
 Route::get('show-form-group/{group}', 'LecturerController@showFormEditGroup')->name('lecturers.showFormEditGroup');
 Route::patch('update-group/{group}', 'LecturerController@updateGroup')->name('lecturers.updateGroup');
 Route::get('group-detail/{group}', 'LecturerController@groupDetail')->name('lecturers.groupDetail');
+Route::post('addUserToGroup/{group}', 'GroupController@addUserToGroup')->name('groups.addUser');
+Route::delete('deleteUserOfGroup/{group}/{user}', 'GroupController@deleteUserFromGroup')->name('groups.deleteUser');
+Route::post('addLeaderToGroup/{group}', 'GroupController@addLeaderToGroup')->name('groups.addLeader');
+
+Route::resource('task-lists.tasks', TaskController::class)
+    ->only([
+        'index',
+        'store',
+        'destroy',
+    ])
+    ->shallow();
+Route::patch('tasks/{task}/toggle', 'TaskController@toggle')->name('tasks.toggle');

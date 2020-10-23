@@ -3,6 +3,7 @@
 return [
     'add' => 'Add task list',
     'assign' => 'Assign to',
+    'chart' => 'Activities on tasklist',
     'completed' => 'Completed',
     'due_date' => 'Due date',
     'edit' => 'Edit task list',
