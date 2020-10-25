@@ -70,3 +70,10 @@ Route::resource('tasks.comments', CommentController::class)
         'destroy',
     ])
     ->shallow();
+
+Route::resource('attachments', AttachmentController::class)
+    ->only([
+        'store',
+        'destroy',
+    ])
+    ->shallow();

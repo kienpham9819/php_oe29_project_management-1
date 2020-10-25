@@ -29,6 +29,11 @@
                                     <i class="far fa-comment"></i>
                                 </a>
                             </div>
+                            <div class="col-md" data-toggle="modal" data-target="#attachment" @click="setAttatchmentTask(index)">
+                                <a class="btn btn-sm btn-secondary">
+                                    <i class="fas fa-paperclip"></i>
+                                </a>
+                            </div>
                         </div>
                     </td>
                 </tr>
@@ -96,6 +101,32 @@
                 </div>
             </div>
         </div>
+        <div class="modal fade" id="attachment" tabindex="-1" role="dialog" aria-labelledby="attachment" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Add attachment on "{{ attachment_task.name }}"</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form method="post" 
+                            :action="att_path"
+                            enctype="multipart/form-data">
+                            <input type="hidden" name="_token" :value="this.token">
+                            <input type="hidden" name="task_id" :value="this.attachment_task.id">
+                            <input type="file" 
+                                name="urls[]"
+                                class='form-control' multiple>
+                            <button type="submit" class="btn btn-primary mt-1">
+                                {{ trans('general.save') }}
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 <script>
@@ -106,21 +137,29 @@
                 .then(response => {
                     this.tasks = response.data;
                 })
+            this.translations = JSON.parse(this.translation);
         },
 
-        props : {
-            render : {required : true},
-            path : {required : true},
-            token : {required : true},
-            task_list_id : {required : true},
+        props: {
+            translation: {required: true},
+            render: {required : true},
+            path: {required : true},
+            token: {required : true},
+            task_list_id: {required : true},
+            att_path: {required : true},
         },
 
         data() {
             return {
+                translations : {},
                 tasks : [],
                 task_name : '',
                 error : false,
                 comment_task : {
+                    id : 0,
+                    name : '',
+                },
+                attachment_task : {
                     id : 0,
                     name : '',
                 },
@@ -130,7 +169,22 @@
         computed : {
         },
 
+<<<<<<< HEAD
         methods : {
+=======
+        methods: {
+
+            trans(key, replace = {}) {
+                let translation = key.split('.').reduce((t, i) => t[i] || null, this.translations);
+
+                for (var placeholder in replace) {
+                    translation = translation.replace(`:${placeholder}`, replace[placeholder]);
+                }
+
+                return translation;
+            },
+
+>>>>>>> attachment
             addTask()
             {
                 if (this.task_name == '') {
@@ -176,6 +230,14 @@
             {
                 this.comment_task = this.tasks[index];
             },
+<<<<<<< HEAD
+=======
+
+            setAttatchmentTask(index)
+            {
+                this.attachment_task = this.tasks[index];
+            },
+>>>>>>> attachment
         }
 
     }

@@ -226,9 +226,11 @@
         <div class="row p-3">
             <div class="col-md bg-white border p-3">
                 <task-input
+                    translation="{{ $translation }}"
                     render="{{ route('task-lists.tasks.index', [$taskList->id]) }}"
                     path="{{ route('task-lists.tasks.store', [$taskList->id]) }}"
                     token="{{ csrf_token() }}"
+                    att_path="{{ route('attachments.store') }}"
                     task_list_id="{{ $taskList->id }}">
                 </task-input>
                 <p>
@@ -268,6 +270,72 @@
                 @empty
                 @endforelse
             </div>
+        </div>
+        <div class="row p-3">
+            <div class="col-md bg-white border p-3">
+                <h3 class="text-uppercase font-weight-bold">
+                    {{ trans('attachment.attachment') }}
+                </h3>
+                <hr>
+                @forelse ($taskList->tasks as $task)
+                    <label class="h5 font-weight-bold">
+                        {{ $task->name }}
+                    </label>
+                    <br>
+                    @forelse($task->attachments as $index => $attachment)
+                        <a href="{{ asset('/storage/' . $attachment->url) }}" class="mb-2">
+                            {{ ++$index }} . {{ $attachment->name }} <i class="fas fa-file"></i>
+                        </a>
+                        <a class="btn btn-danger btn-sm ml-3 mb-2" data-toggle="modal" data-target="#deleteAttachment">
+                            <i class="far fa-trash-alt">
+                            </i>
+                        </a>
+                        <div class="modal fade" id="deleteAttachment" tabindex="-1" role="dialog" aria-labelledby="deleteAttachment" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title text-capitalize" id="deleteAttachment">
+                                            {{ trans('general.confirm') }}
+                                        </h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <form method="POST" action="{{ route('attachments.destroy', [$attachment->id]) }}">
+                                            @csrf
+                                            @method('delete')
+                                            <button type="submit" class="btn btn-danger">
+                                                {{ trans('general.delete') }}
+                                            </button>
+                                        </form>
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                                            {{ trans('general.close') }}
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <br>
+                    @empty
+                        <span class="text-capitalize">
+                            {{ trans('general.empty', ['attribute' => trans('attachment.attachment')]) }}
+                        </span>
+                    @endforelse
+                    <hr>
+                @empty
+                    <span class="text-capitalize">
+                        {{ trans('general.empty', ['attribute' => trans('task.task')]) }}
+                    </span>
+                @endforelse
+            </div>
+            @if ($errors->has('urls'))
+                <div class="alert alert-danger" role="alert">
+                    @foreach ($errors->all() as $message)
+                        {{ $message }}
+                    @endforeach
+                </div>
+            @endif
         </div>
     </div>
 @endsection
