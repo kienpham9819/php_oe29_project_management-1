@@ -133,7 +133,7 @@
                                     {{ $project->tasks()->count() }}
                                 </td>
                                 <td>
-                                    {{ $course->name }}
+                                    {{ $project->group->course->name }}
                                 </td>
                                 <td>
                                     <a class="btn btn-primary btn-sm" href="{{ route('projects.show', [$project->id]) }}">

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Course;
+use App\Models\Group;
 use App\Models\Project;
 use App\Http\Requests\ProjectRequest;
 
@@ -19,6 +20,13 @@ class ProjectController extends Controller
         $this->middleware('auth');
     }
 
+    public function create(Group $group)
+    {
+        $group->load('course');
+
+        return view('projects.create', compact(['group']));
+    }
+
     public function index()
     {
         $user = auth()->user();
@@ -26,7 +34,7 @@ class ProjectController extends Controller
         $groups = $user->groups()
             ->has('project')
             ->pluck('groups.id');
-        $projects = Project::whereIn('id', $groups)->orderBy('updated_at', 'desc')
+        $projects = Project::whereIn('group_id', $groups)->orderBy('updated_at', 'desc')
             ->with(['tasks', 'group.course'])
             ->paginate(config('paginate.record_number'));
 
@@ -34,6 +42,17 @@ class ProjectController extends Controller
             'courses',
             'projects',
         ]));
+    }
+
+    public function store(ProjectRequest $request, Group $group)
+    {
+        Project::create([
+            'name' => $request->name,
+            'description' => $request->description,
+            'group_id' => $group->id,
+        ]);
+
+        return redirect()->route('projects.index');
     }
 
     /**

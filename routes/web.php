@@ -27,6 +27,8 @@ Route::resource('roles', 'RoleController');
 
 Route::resource('projects', ProjectController::class)->except(['create', 'store']);
 
+Route::resource('groups.projects', ProjectController::class)->only(['create', 'store']);
+
 Route::resource('projects.task-lists', TaskListController::class);
 
 Route::resource('courses', 'CourseController');

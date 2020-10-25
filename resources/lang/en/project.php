@@ -2,6 +2,7 @@
 
 return [
     'approved' => 'Approved project',
+    'create' => 'Create project',
     'edit' => 'Edit project',
     'list' => 'Project list',
     'management' => 'Project management',
