@@ -239,33 +239,32 @@
                     @endforeach
                 </p>
                 @forelse ($taskList->tasks as $task)
-                            <div class="modal fade" id="info{{ $task->id }}" tabindex="-1" role="dialog" aria-labelledby="member" aria-hidden="true">
-                                <div class="modal-dialog modal-dialog-centered" role="document">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title" id="member">{{ $task->name }}</h5>
-                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                <span aria-hidden="true">&times;</span>
-                                            </button>
-                                        </div>
-                                        <div class="modal-body">
-                                            @forelse ($task->comments as $comment)
-                                                <a class="font-weight-bold text-primary">
-                                                    {{ $comment->user->name }}
-                                                </a>
-                                                <p>
-                                                    {{ $comment->content }}
-                                                </p>
-                                                <hr>
-                                            @empty
-                                                <span class="text-capitalize">
-                                                    {{ trans('general.empty', ['attribute' => trans('comment.comment')]) }}
-                                                </span>
-                                            @endforelse
-                                        </div>
-                                    </div>
+                    <div class="modal fade" id="info{{ $task->id }}" tabindex="-1" role="dialog" aria-labelledby="member" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="member">{{ $task->name }}</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    @forelse ($task->comments as $comment)
+                                        <comment id="{{ $comment->id }}"
+                                            render="{{ route('comments.show', [$comment->id]) }}"
+                                            update_path="{{ route('comments.update', [$comment->id]) }}"
+                                            delete_path="{{ route('comments.destroy', [$comment->id]) }}"
+                                            user_id="{{ auth()->user()->id }}">
+                                        </comment>
+                                    @empty
+                                        <span class="text-capitalize">
+                                            {{ trans('general.empty', ['attribute' => trans('comment.comment')]) }}
+                                        </span>
+                                    @endforelse
                                 </div>
                             </div>
+                        </div>
+                    </div>
                 @empty
                 @endforelse
             </div>

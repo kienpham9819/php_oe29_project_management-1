@@ -21,6 +21,7 @@ window.Vue = require('vue');
 
 Vue.component('calendar', require('./components/Calendar.vue').default);
 Vue.component('task-input', require('./components/TaskInput.vue').default);
+Vue.component('comment', require('./components/Comment.vue').default);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to

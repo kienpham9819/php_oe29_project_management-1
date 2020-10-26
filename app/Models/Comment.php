@@ -9,6 +9,12 @@ class Comment extends Model
 {
     use SoftDeletes;
 
+    protected $fillable = [
+        'user_id',
+        'content',
+        'task_id',
+    ];
+
     public function task()
     {
         return $this->belongsTo(Task::class);

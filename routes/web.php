@@ -61,3 +61,12 @@ Route::resource('task-lists.tasks', TaskController::class)
     ])
     ->shallow();
 Route::patch('tasks/{task}/toggle', 'TaskController@toggle')->name('tasks.toggle');
+
+Route::resource('tasks.comments', CommentController::class)
+    ->only([
+        'show',
+        'store',
+        'update',
+        'destroy',
+    ])
+    ->shallow();
