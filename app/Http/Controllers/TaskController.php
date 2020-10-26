@@ -9,11 +9,16 @@ use App\Http\Requests\TasksStoreRequest;
 
 class TaskController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
+
     public function index(TaskList $taskList)
     {
         return $taskList->tasks;

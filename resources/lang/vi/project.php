@@ -2,6 +2,7 @@
 
 return [
     'approved' => 'Dự án được chấp nhận',
+    'create' => 'Tạo dự án mới',
     'edit' => 'Sửa dự án',
     'list' => 'Danh sách dự án',
     'management' => 'Quản lý dự án',
