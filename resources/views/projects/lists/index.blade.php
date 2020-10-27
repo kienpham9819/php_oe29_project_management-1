@@ -80,7 +80,7 @@
                         </div>
                         <div class="card-body">
                             @foreach ($taskLists as $taskList)
-                                @if ($taskList->tasks()->where('is_completed', 0)->count() != 0)
+                                @if ($taskList->tasks()->where('is_completed', 0)->count() != 0 && $taskList->start_date != null)
                                     <div class="card mb-3">
                                         <div class="card-body bg-light p-2">
                                             <a class="font-weight-bold" href="{{ route('projects.task-lists.show', [$project->id, $taskList->id]) }}">

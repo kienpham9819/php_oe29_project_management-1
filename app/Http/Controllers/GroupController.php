@@ -36,7 +36,7 @@ class GroupController extends Controller
             'course_id' => $course->id,
         ]);
 
-        return redirect()->back()->with('message', 'group.add_noti');
+        return redirect()->back()->with('message', trans('group.add_noti'));
     }
 
     public function getUsersHasNoGroup(Group $group)
@@ -76,6 +76,7 @@ class GroupController extends Controller
             $group->users()->updateExistingPivot($user->id, ['is_leader' => config('admin.isNotLeader')]);
         }
         $group->users()->updateExistingPivot($request->leader, ['is_leader' => config('admin.isLeader')]);
+        Role::findOrFail(config('admin.leader'))->users()->syncWithoutDetaching($request->leader);
 
         return redirect()->back()->with('message', trans('group.noti_addLeader'));
     }
@@ -138,7 +139,7 @@ class GroupController extends Controller
                 'name' => $request->name_group,
             ]);
 
-            return redirect()->route('courses.show', $group->course_id)->with('message', 'group.edit_noti');
+            return redirect()->route('courses.show', $group->course_id)->with('message', trans('group.edit_noti'));
         }
     }
 
@@ -160,6 +161,6 @@ class GroupController extends Controller
         }
         $group->delete();
 
-        return redirect()->back()->with('message', 'group.delete_noti');
+        return redirect()->back()->with('message', trans('group.delete_noti'));
     }
 }

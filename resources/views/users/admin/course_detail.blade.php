@@ -24,7 +24,7 @@
         <h5><span class="font-weight-bold">{{ trans('course.course') }} :</span> <span>{{ $course->name }}</span></h5>
         <h5><span class="font-weight-bold">{{ trans('course.lecturer') }} :</span> <span>{{ $course->user->name }}</span></h5>
     </label><br>
-    <a class="btn btn-success text-capitalize"
+    <a class="btn btn-success text-capitalize mb-2"
         data-toggle="collapse"
         href="#addGroup"
         role="button"
@@ -34,7 +34,7 @@
         <i class="fas fa-plus"></i>
         {{ trans('course.add_group_form') }}
     </a>
-    <button class="btn btn-primary" type="button" data-toggle="dropdown">
+    <button class="btn btn-primary mb-2" type="button" data-toggle="dropdown">
          <i class="fas fa-user-plus"></i>{{ trans('course.add_member_form') }}
     </button>
     @error('user_id')
@@ -61,7 +61,7 @@
             <hr>
         </div>
     </div>
-    <ul class="dropdown-menu p-2 h-50 overflow-auto">
+    <ul class="dropdown-menu p-2 h-50 overflow-auto mt-2">
         <form action="{{ route('courses.addUser', $course->id) }}" method="post">
             @csrf
             <input class="form-control" id="search_user" type="text" placeholder="{{ trans('course.search_user') }}">
