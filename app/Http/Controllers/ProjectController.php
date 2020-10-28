@@ -66,8 +66,14 @@ class ProjectController extends Controller
         $project->load(['group.users', 'taskLists', 'tasks']);
         $unfinished = $project->tasks()->where('is_completed', false)->count();
         $completed = $project->tasks()->where('is_completed', true)->count();
+        $user = auth()->user();
+        if ($user->hasRole('student')) {
+            return view('projects.show', compact(['project', 'unfinished', 'completed']));
+        } elseif ($user->hasRole('admin')) {
+            return view('users.admin.project_detail', compact(['project', 'unfinished', 'completed']));
+        }
 
-        return view('projects.show', compact(['project', 'unfinished', 'completed']));
+        return view('users.lecturer.project_detail', compact(['project', 'unfinished', 'completed']));
     }
 
     /**
@@ -79,8 +85,11 @@ class ProjectController extends Controller
     public function edit(Project $project)
     {
         $project->load(['group.users.roles', 'taskLists']);
+        if (auth()->user()->hasRole('student')) {
+            return view('projects.edit', compact('project'));
+        }
 
-        return view('projects.edit', compact('project'));
+        return view('users.admin.project_edit', compact('project'));
     }
 
     /**
@@ -109,8 +118,11 @@ class ProjectController extends Controller
     public function destroy(Project $project)
     {
         $project->delete();
+        if (auth()->user()->hasRole('student')) {
+            return redirect()->route('projects.index');
+        }
 
-        return redirect()->route('projects.index');
+        return redirect()->route('groups.show', $project->group->id);
     }
 
     public function toggle(Project $project)
