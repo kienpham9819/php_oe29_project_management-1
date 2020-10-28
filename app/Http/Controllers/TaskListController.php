@@ -26,12 +26,27 @@ class TaskListController extends Controller
         $project->load(['group.users', 'taskLists', 'tasks']);
         $unfinished = $project->tasks()->where('is_completed', false)->count();
         $completed = $project->tasks()->where('is_completed', true)->count();
+        $taskLists = $project->taskLists->load(['tasks', 'comments']);
+        $user = auth()->user();
+        if ($user->hasRole('student')) {
+            return view('projects.lists.index', compact([
+                'project',
+                'completed',
+                'taskLists',
+            ]));
+        } elseif ($user->hasRole('admin')) {
+            return view('users.admin.task_list', compact([
+                'project',
+                'completed',
+                'taskLists',
+            ]));
+        }
 
-        return view('projects.lists.index', [
-            'project' => $project,
-            'completed' => $completed,
-            'taskLists' => $project->taskLists->load(['tasks', 'comments'])
-        ]);
+        return view('users.lecturer.task_list', compact([
+            'project',
+            'completed',
+            'taskLists',
+        ]));
     }
 
     /**
@@ -42,8 +57,11 @@ class TaskListController extends Controller
     public function create(Project $project)
     {
         $project->load('group.users');
+        if (auth()->user()->hasRole('student')) {
+            return view('projects.lists.create', compact(['project']));
+        }
 
-        return view('projects.lists.create', compact(['project']));
+        return view('users.admin.task_lists_create', compact(['project']));
     }
 
     /**
@@ -81,8 +99,26 @@ class TaskListController extends Controller
         $chart = $this->createActivityChart($taskList);
         $completed = $taskList->tasks->where('is_completed', 1)->count();
         $unfinished = $taskList->tasks->where('is_completed', 0)->count();
+        $user = auth()->user();
+        if ($user->hasRole('student')) {
+            return view('projects.lists.show', compact([
+                'taskList',
+                'project',
+                'completed',
+                'unfinished',
+                'chart',
+            ]));
+        } elseif ($user->hasRole('lecturer')) {
+            return view('users.lecturer.task_list_detail', compact([
+                'taskList',
+                'project',
+                'completed',
+                'unfinished',
+                'chart',
+            ]));
+        }
 
-        return view('projects.lists.show', compact([
+        return view('users.admin.task_list_detail', compact([
             'taskList',
             'project',
             'completed',
@@ -103,8 +139,16 @@ class TaskListController extends Controller
         $completed = $taskList->tasks->where('is_completed', 1)->count();
         $unfinished = $taskList->tasks->where('is_completed', 0)->count();
         $project->load('group.users');
+        if (auth()->user()->hasRole('student')) {
+            return view('projects.lists.edit', compact([
+                'taskList',
+                'project',
+                'completed',
+                'unfinished',
+            ]));
+        }
 
-        return view('projects.lists.edit', compact([
+        return view('users.admin.task_list_edit', compact([
             'taskList',
             'project',
             'completed',
