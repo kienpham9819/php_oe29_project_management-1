@@ -18,21 +18,41 @@ class LecturerController extends Controller
 
     public function listCourse()
     {
-        $courses = auth()->user()->teaches()->paginate(config('paginate.record_number'));
+        $user = auth()->user();
+        $courses = $user->teaches()->paginate(config('paginate.record_number'));
+        $newCourses = $user->teaches()
+            ->orderBy('updated_at', 'desc')
+            ->limit(config('app.display_limit'))->get();
 
-        return view('users.lecturer.course_list', compact(['courses']));
+        return view('users.lecturer.course_list', compact([
+            'courses',
+            'newCourses',
+        ]));
     }
 
     public function showDetailCourse(Course $course)
     {
         $course = Course::with('groups', 'users')->where('courses.id', $course->id)->first();
+        $newCourses = auth()->user()->teaches()
+            ->orderBy('updated_at', 'desc')
+            ->limit(config('app.display_limit'))->get();
 
-        return view('users.lecturer.course_detail', compact(['course']));
+        return view('users.lecturer.course_detail', compact([
+            'course',
+            'newCourses',
+        ]));
     }
 
     public function showFormEditGroup(Group $group)
     {
-        return view('users.lecturer.group_edit', compact(['group']));
+        $newCourses = auth()->user()->teaches()
+            ->orderBy('updated_at', 'desc')
+            ->limit(config('app.display_limit'))->get();
+
+        return view('users.lecturer.group_edit', compact([
+            'group',
+            'newCourses',
+        ]));
     }
 
     public function updateGroup(GroupRequest $request, Group $group)
@@ -48,7 +68,7 @@ class LecturerController extends Controller
                 'name' => $request->name_group,
             ]);
 
-            return redirect()->route('lecturers.courseDetail', $group->course_id)->with('message', 'group.edit_noti');
+            return redirect()->route('lecturers.courseDetail', $group->course_id)->with('message', trans('group.edit_noti'));
         }
     }
 
@@ -64,7 +84,7 @@ class LecturerController extends Controller
         }
         $group->delete();
 
-        return redirect()->back()->with('message', 'group.delete_noti');
+        return redirect()->back()->with('message', trans('group.delete_noti'));
     }
 
     public function getUsersHasNoGroup(Group $group)
@@ -88,7 +108,15 @@ class LecturerController extends Controller
                 ->where('group_id', $group->id);
         })->first();
         $users = $this->getUsersHasNoGroup($group);
+        $newCourses = auth()->user()->teaches()
+            ->orderBy('updated_at', 'desc')
+            ->limit(config('app.display_limit'))->get();
 
-        return view('users.lecturer.group_detail', compact(['group', 'users', 'leader']));
+        return view('users.lecturer.group_detail', compact([
+            'group',
+            'users',
+            'leader',
+            'newCourses',
+        ]));
     }
 }

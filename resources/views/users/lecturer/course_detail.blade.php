@@ -32,7 +32,7 @@
         <i class="fas fa-plus"></i>
         {{ trans('course.add_group_form') }}
     </a>
-    <div class="collapse @if ($errors->has('name_group')) show @endif" id="addGroup">
+    <div class="collapse mt-2 @if ($errors->has('name_group')) show @endif" id="addGroup">
         <div class="card card-body">
             <form action="{{ route('courses.groups.store', [$course->id]) }}" method="POST" role="form">
                 @csrf

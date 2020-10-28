@@ -34,7 +34,7 @@
     @error('user_id')
         <span class="text-danger pl-2">{{ $message }}</span>
     @enderror
-    <ul class="dropdown-menu h-50 p-2 overflow-auto">
+    <ul class="dropdown-menu h-50 p-2 overflow-auto mt-2">
         <form action="{{ route('groups.addUser', [$group->id]) }}" method="post">
             @csrf
             <input class="form-control" id="search_user" type="text" placeholder="{{ trans('course.search_user') }}">
@@ -130,19 +130,27 @@
 
     @isset ($group->project)
         <div class="project-infor mt-2">
-            <label class="font-weight-bold">{{ trans('group.name_project') }}: {{ $group->project->name }}</label><br>
-            <label class="font-weight-bold">{{ trans('group.des_project') }}: {{ $group->project->description }}</label><br>
-            <label class="font-weight-bold">{{ trans('group.status_project') }}:
-                {{ $group->project->is_accepted == null ||  $group->project->is_accepted == false ? trans('project.pending') : trans('project.approved') }}
-            </label><br>
-            <form action="{{ route('projects.toggle', [$group->project->id]) }}" method="POST">
+            <hr>
+            <label class="font-weight-bold mr-2">{{ trans('group.name_project') }} :</label><span>{{ $group->project->name }}</span><br>
+            <hr>
+            <label class="font-weight-bold mr-2">{{ trans('group.des_project') }} :</label><span>{{ $group->project->description }}</span><br>
+            <hr>
+            <label class="font-weight-bold mr-2">{{ trans('group.status_project') }} :</label><span>{{ $group->project->is_accepted == null ||  $group->project->is_accepted == false ? trans('project.pending') : trans('project.approved') }}</span><br>
+            <hr>
+            <form action="{{ route('projects.toggle', [$group->project->id]) }}" method="POST" class="mb-3">
                 @csrf
                 @method('patch')
                 <button class="btn btn-primary">
                     {{ $group->project->is_accepted == null ||  $group->project->is_accepted == false ? trans('project.approved') : trans('project.pending') }}
                 </button>
             </form>
-            <span><a href="{{ route('projects.show', $group->project->id) }}">{{ trans('general.details') }}</a></span>
+            <span>
+                <a href="{{ route('projects.show', $group->project->id) }}">
+                    <i class="fas fa-angle-double-right"></i>
+                    {{ trans('general.details') }}
+                    <i class="fas fa-angle-double-right"></i>
+                </a>
+            </span>
         </div>
     @else
         <p>{{ trans('general.empty', ['attribute' => trans('project.project')]) }}</p>

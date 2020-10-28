@@ -90,7 +90,7 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                        <form method="post" :action="'http://127.0.0.1:8000/tasks/' + this.comment_task.id + '/comments'">
+                        <form method="post" :action="'http://window.location/tasks/' + this.comment_task.id + '/comments'">
                             <input type="hidden" name="_token" :value="this.token">
                             <input type="text"
                                 name="content"

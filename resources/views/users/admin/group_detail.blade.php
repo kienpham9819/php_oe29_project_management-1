@@ -132,10 +132,24 @@
 
     @isset ($group->project)
         <div class="project-infor mt-2">
-            <label class="font-weight-bold">{{ trans('group.name_project') }}: {{ $group->project->name }}</label><br>
-            <label class="font-weight-bold">{{ trans('group.des_project') }}: {{ $group->project->description }}</label><br>
-            <label class="font-weight-bold">{{ trans('group.status_project') }}: {{ $group->project->is_accepted }}</label><br>
-            <span><a href="{{ route('projects.show', $group->project->id) }}">{{ trans('general.details') }}</a></span>
+            <hr>
+            <label class="font-weight-bold mr-2">{{ trans('group.name_project') }} :</label><span>{{ $group->project->name }}</span><br>
+            <hr>
+            <label class="font-weight-bold mr-2">{{ trans('group.des_project') }} :</label><span>{{ $group->project->description }}</span><br>
+            <hr>
+            <label class="font-weight-bold mr-2">{{ trans('group.status_project') }} :</label>
+            <span>
+                {{ $group->project->is_accepted == null ||  $group->project->is_accepted == false ? trans('project.pending') : trans('project.approved') }}
+            </span>
+            <br>
+            <hr>
+            <span>
+                <a href="{{ route('projects.show', $group->project->id) }}">
+                    <i class="fas fa-angle-double-right"></i>
+                    {{ trans('general.details') }}
+                    <i class="fas fa-angle-double-right"></i>
+                </a>
+            </span>
         </div>
     @else
         <p>{{ trans('general.empty', ['attribute' => trans('project.project')]) }}</p>

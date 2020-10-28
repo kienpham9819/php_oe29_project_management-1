@@ -175,7 +175,7 @@
                             </a>
                         </td>
                         <td>
-                            <a data-toggle="modal" href='#delete{{ $user->id }}'>
+                            <a data-toggle="modal" href='#{{ $user->id == config("admin.admin") ? "#" : "delete" . $user->id }}'>
                                 <i class="fas fa-user-minus text-danger"></i>
                             </a>
                             <div class="modal fade" id="{{ 'delete' . $user->id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">

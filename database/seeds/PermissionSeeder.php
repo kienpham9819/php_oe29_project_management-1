@@ -93,10 +93,6 @@ class PermissionSeeder extends Seeder
                 'slug' => 'delete-tasklist',
             ],
             [
-                'name' => 'assign tasklist',
-                'slug' => 'assign-tasklist',
-            ],
-            [
                 'name' => 'update task progress',
                 'slug' => 'update-task-progress',
             ],
