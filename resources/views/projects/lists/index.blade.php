@@ -29,10 +29,12 @@
                 <h3 class="text-uppercase">
                     {{ trans('list.task_list') }}
                 </h3>
-                <a class="btn btn-primary text-capitalize" href="{{ route('projects.task-lists.create', [$project->id]) }}">
-                    <i class="far fa-list-alt"></i>
-                    {{ trans('list.add') }}
-                </a>
+                @if (auth()->user()->can('create-tasklist') && auth()->user()->can('update', $project))
+                    <a class="btn btn-primary text-capitalize" href="{{ route('projects.task-lists.create', [$project->id]) }}">
+                        <i class="far fa-list-alt"></i>
+                        {{ trans('list.add') }}
+                    </a>
+                @endif
             </div>
             <hr>
             <div class="row">

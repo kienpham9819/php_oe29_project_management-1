@@ -19,7 +19,7 @@
                                     </i>
                                 </span>
                             </div>
-                            <div class="col-md">
+                            <div class="col-md" v-if="can_delete">
                                 <a class="btn btn-sm btn-danger" @click="deleteTask(index)">
                                     <i class="far fa-trash-alt"></i>
                                 </a>
@@ -32,7 +32,7 @@
                         </div>
                     </td>
                 </tr>
-                <tr>
+                <tr v-if="can_create">
                     <td>
                         <div class="container text-center">
                             <div>
@@ -49,7 +49,7 @@
                         </div>
                     </td>
                 </tr>
-                <tr>
+                <tr v-if="can_create">
                     <td>
                         <form method="post" :action="path">
                             <input type="hidden" name="_token" :value="this.token">
@@ -121,6 +121,8 @@
             token: {required : true},
             task_list_id: {required : true},
             att_path: {required : true},
+            can_create: {default : false},
+            can_delete: {default : false},
         },
 
         data() {

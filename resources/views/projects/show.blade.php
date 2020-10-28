@@ -147,14 +147,16 @@
                 </div>
                 <table class="table table-hover mt-3">
                     <tbody>
-                        <tr>
-                            <td>
-                                <a class="h5 text-uppercase text-dark" href="{{ route('projects.edit', [$project->id]) }}">
-                                    <i class="far fa-edit"></i>
-                                    {{ trans('project.edit') }}
-                                </a>
-                            </td>
-                        </tr>
+                        @if (auth()->user()->can('update-project') && auth()->user()->can('update', $project))
+                            <tr>
+                                <td>
+                                    <a class="h5 text-uppercase text-dark" href="{{ route('projects.edit', [$project->id]) }}">
+                                        <i class="far fa-edit"></i>
+                                        {{ trans('project.edit') }}
+                                    </a>
+                                </td>
+                            </tr>
+                        @endif
                         <tr>
                             <td>
                                 <a class="h5 text-uppercase text-dark" href="{{ route('projects.task-lists.index', [$project->id]) }}">
@@ -163,14 +165,16 @@
                                 </a>
                             </td>
                         </tr>
-                        <tr>
-                            <td>
-                                <a class="h5 text-uppercase text-dark" href="#" data-toggle="modal" data-target="#deleteModal">
-                                    <i class="far fa-trash-alt"></i>
-                                    {{ trans('general.delete') }}
-                                </a>
-                            </td>
-                        </tr>
+                        @if (auth()->user()->can('delete-project') && auth()->user()->can('delete', $project))
+                            <tr>
+                                <td>
+                                    <a class="h5 text-uppercase text-dark" href="#" data-toggle="modal" data-target="#deleteModal">
+                                        <i class="far fa-trash-alt"></i>
+                                        {{ trans('general.delete') }}
+                                    </a>
+                                </td>
+                            </tr>
+                        @endif
                     </tbody>
                 </table>
                 <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteLabel" aria-hidden="true">
