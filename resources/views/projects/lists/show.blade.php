@@ -257,12 +257,24 @@
                                             update_path="{{ route('comments.update', [$comment->id]) }}"
                                             delete_path="{{ route('comments.destroy', [$comment->id]) }}"
                                             user_id="{{ auth()->user()->id }}">
+                                            <label class="font-weight-bold text-primary">
+                                                {{ $comment->user->name }}
+                                            </label>
                                         </comment>
+                                        <hr>
                                     @empty
                                         <span class="text-capitalize">
                                             {{ trans('general.empty', ['attribute' => trans('comment.comment')]) }}
                                         </span>
+                                        <hr>
                                     @endforelse
+                                    <form method="post" action="{{ route('tasks.comments.store', [$task->id]) }}">
+                                        @csrf
+                                        <input type="text"
+                                            name="content"
+                                            class='form-control'
+                                            placeholder="{{ trans('comment.enter_comment') }} ...">
+                                    </form>
                                 </div>
                             </div>
                         </div>
