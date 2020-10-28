@@ -7,10 +7,10 @@
                 <tr v-for="(task,index) in tasks">
                     <td>
                         <div class="row">
-                            <div class="col-md-10" data-toggle="modal" :data-target="'#info' + task.id">
+                            <div class="col-md-10">
                                 <input v-if="task.status != null" type='checkbox' disabled>
                                 <input v-else type='checkbox' :checked="task.is_completed" @click="toggle(index)">
-                                <a>
+                                <a data-toggle="modal" :data-target="'#info' + task.id">
                                     {{ task.name }}
                                 </a>
                                 <span v-if="task.status != null" class="text-secondary">
@@ -22,11 +22,6 @@
                             <div class="col-md">
                                 <a class="btn btn-sm btn-danger" @click="deleteTask(index)">
                                     <i class="far fa-trash-alt"></i>
-                                </a>
-                            </div>
-                            <div class="col-md" data-toggle="modal" data-target="#comment" @click="setCommentTask(index)">
-                                <a class="btn btn-sm btn-primary">
-                                    <i class="far fa-comment"></i>
                                 </a>
                             </div>
                             <div class="col-md" data-toggle="modal" data-target="#attachment" @click="setAttatchmentTask(index)">
@@ -73,34 +68,13 @@
                                     value="0">
                             </div>
                             <button type="submit" class="btn btn-primary btn-sm">
-                                Save
+                                {{ trans('general.save') }}
                             </button>
                         </form>
                     </td>
                 </tr>
             </tbody>
         </table>
-        <div class="modal fade" id="comment" tabindex="-1" role="dialog" aria-labelledby="comment" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">Add comment on "{{ comment_task.name }}"</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <form method="post" :action="'http://window.location/tasks/' + this.comment_task.id + '/comments'">
-                            <input type="hidden" name="_token" :value="this.token">
-                            <input type="text"
-                                name="content"
-                                class='form-control'
-                                placeholder="Enter comment here...">
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
         <div class="modal fade" id="attachment" tabindex="-1" role="dialog" aria-labelledby="attachment" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
@@ -155,10 +129,6 @@
                 tasks : [],
                 task_name : '',
                 error : false,
-                comment_task : {
-                    id : 0,
-                    name : '',
-                },
                 attachment_task : {
                     id : 0,
                     name : '',
@@ -220,11 +190,6 @@
                             this.tasks[index].is_completed = !this.tasks[index].is_completed;
                         });
                 }
-            },
-
-            setCommentTask(index)
-            {
-                this.comment_task = this.tasks[index];
             },
 
             setAttatchmentTask(index)
