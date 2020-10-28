@@ -1,11 +1,6 @@
 @extends('users.lecturer.index')
 
 @section('breadcrumb')
-    <li class="breadcrumb-item text-capitalize" aria-current="page">
-        <a href="{{ route('lecturers.courseList') }}">
-            {{ trans('general.dashboard') }}
-        </a>
-    </li>
     <li class="breadcrumb-item active text-capitalize" aria-current="page">
        {{ trans('course.title_list') }}
     </li>

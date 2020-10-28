@@ -3,7 +3,7 @@
 @section('breadcrumb')
     <li class="breadcrumb-item text-capitalize" aria-current="page">
         <a href="{{ route('lecturers.courseList') }}">
-            {{ trans('general.dashboard') }}
+            {{ trans('course.title_list') }}
         </a>
     </li>
     <li class="breadcrumb-item text-capitalize" aria-current="page">
