@@ -24,7 +24,7 @@
                         <ul class="nav flex-column ml-4">
                             @forelse ($courses as $course)
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark" href="#">
+                                    <a class="nav-link text-dark" href="{{ route('students.courseDetail', $course->id) }}">
                                         <i class="fas fa-caret-right"></i>
                                         {{ $course->name }}
                                     </a>
@@ -39,7 +39,7 @@
                             @endforelse
                             @if (!empty($courses))
                                 <li class="nav-item">
-                                    <a class="nav-link" href="#">
+                                    <a class="nav-link" href="{{ route('students.courseList') }}">
                                         <i class="fas fa-caret-right"></i>
                                         {{ trans('general.more') }} ...
                                     </a>

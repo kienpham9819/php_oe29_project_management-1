@@ -112,4 +112,12 @@ class ProjectController extends Controller
 
         return redirect()->route('projects.index');
     }
+
+    public function toggle(Project $project)
+    {
+        $project->is_accepted = !$project->is_accepted;
+        $project->save();
+
+        return back();
+    }
 }
