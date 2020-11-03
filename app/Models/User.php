@@ -6,10 +6,11 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Traits\PermissionTrait;
 
 class User extends Authenticatable
 {
-    use Notifiable, SoftDeletes;
+    use Notifiable, SoftDeletes, PermissionTrait;
 
     /**
      * The attributes that are mass assignable.
@@ -71,26 +72,5 @@ class User extends Authenticatable
     public function tasks()
     {
         return $this->hasManyThrough(Task::class, TaskList::class);
-    }
-
-    public function hasRole($roleName)
-    {
-        $role = Role::where('slug', $roleName)->first();
-        if ($role) {
-            return $this->roles->contains($role);
-        }
-
-        return false;
-    }
-
-    public function hasPermissionTo(Permission $permission)
-    {
-        foreach ($permission->roles as $role) {
-            if ($this->roles->contains($role)) {
-                return true;
-            }
-        }
-
-        return false;
     }
 }
