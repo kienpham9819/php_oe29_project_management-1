@@ -2,16 +2,22 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Task;
-use App\Models\TaskList;
 use Illuminate\Http\Request;
 use App\Http\Requests\TasksStoreRequest;
+use App\Repositories\Task\TaskRepositoryInterface;
+use App\Repositories\TaskList\TaskListRepositoryInterface;
 
 class TaskController extends Controller
 {
-    public function __construct()
-    {
+    protected $taskRepository, $taskListRepository;
+
+    public function __construct(
+        TaskRepositoryInterface $taskRepository,
+        TaskListRepositoryInterface $taskListRepository
+    ) {
         $this->middleware('auth');
+        $this->taskRepository = $taskRepository;
+        $this->taskListRepository = $taskListRepository;
     }
     /**
      * Display a listing of the resource.
@@ -19,9 +25,9 @@ class TaskController extends Controller
      * @return \Illuminate\Http\Response
      */
 
-    public function index(TaskList $taskList)
+    public function index($id)
     {
-        return $taskList->tasks;
+        return $this->taskListRepository->tasks($id);
     }
 
     /**
@@ -30,9 +36,9 @@ class TaskController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(TaskList $taskList, TasksStoreRequest $request)
+    public function store($id, TasksStoreRequest $request)
     {
-        Task::insert($request->tasks);
+        $this->taskRepository->insert($request->tasks);
 
         return back();
     }
@@ -43,17 +49,16 @@ class TaskController extends Controller
      * @param  \App\Models\Task  $task
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Task $task)
+    public function destroy($id)
     {
-        $task->delete();
+        $this->taskRepository->delete($id);
 
         return true;
     }
 
-    public function toggle(Task $task)
+    public function toggle($id)
     {
-        $task->is_completed = !$task->is_completed;
-        $task->save();
+        $this->taskRepository->toggle($id);
 
         return true;
     }
