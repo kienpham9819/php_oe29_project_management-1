@@ -52,8 +52,12 @@
                     </div>
                     <div class="input-group input-group-lg p-2">
                         <input type="submit"
-                            class="form-control bg-primary text-white text-uppercase rounded-pill pl-4"
-                            value="{{ trans('general.login') }}">
+                            id="login-btn"
+                            class="d-none">
+                        <label for="login-btn"
+                            class="form-control bg-primary text-white text-uppercase rounded-pill pl-4 login-btn">
+                            {{ trans('general.login') }}
+                        </label>
                     </div>
                 </form>
                 @if (Route::has('password.request'))

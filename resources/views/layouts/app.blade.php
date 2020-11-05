@@ -27,18 +27,18 @@
 
                 <ul class="navbar-nav ml-auto">
                     <li class="nav-item dropdown mr-5">
-                        <a id="managingDropdown" class="nav-link dropdown-toggle text-white" href= "#" role="button"
+                        <a id="managingDropdown" class="nav-link dropdown-toggle text-white lang" href= "#" role="button"
                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
                             <i class="fas fa-globe"></i>
                             {{ trans('general.language') }}
                             <span class="caret"></span>
                         </a>
                         <div class="dropdown-menu" aria-labelledby="managingDropdown">
-                            <a class="dropdown-item" href="{{ route('localization', ['en']) }}">
+                            <a class="dropdown-item" id="en" href="{{ route('localization', ['en']) }}">
                                 {{ trans('general.english') }}
                             </a>
                             <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="{{ route('localization', ['vi']) }}">
+                            <a class="dropdown-item" id="vi" href="{{ route('localization', ['vi']) }}">
                                 {{ trans('general.vietnamese') }}
                             </a>
                         </div>
