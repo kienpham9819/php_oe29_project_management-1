@@ -8,7 +8,7 @@
             </ol>
         </nav>
         <div class="row pr-3">
-            <div class="col-md-4 mb-2 text-capitalize">
+            <div class="col-md-4 mb-2">
                 <ul class="nav flex-column border-left">
                     <li class="nav-item">
                         <a class="nav-link text-primary font-weight-bold h5" href="{{ route('home') }}">
@@ -17,7 +17,7 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-dark font-weight-bold h5">
+                        <a class="nav-link text-dark font-weight-bold h5" href="{{ route('students.courseList') }}">
                             <i class="fas fa-graduation-cap"></i>
                             {{ trans('course.management') }}
                         </a>
