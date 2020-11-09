@@ -3,6 +3,12 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use App\Repositories\User\UserRepositoryInterface;
+use App\Repositories\User\UserRepository;
+use App\Repositories\Role\RoleRepositoryInterface;
+use App\Repositories\Role\RoleRepository;
+use App\Repositories\Course\CourseRepositoryInterface;
+use App\Repositories\Course\CourseRepository;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -15,11 +21,23 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->app->singleton(
             \App\Repositories\Task\TaskRepositoryInterface::class,
-            \App\Repositories\Task\TaskRepository::class
+            \App\Repositories\Task\TaskRepository::class,
         );
         $this->app->singleton(
             \App\Repositories\TaskList\TaskListRepositoryInterface::class,
-            \App\Repositories\TaskList\TaskListRepository::class
+            \App\Repositories\TaskList\TaskListRepository::class,
+        );
+        $this->app->singleton(
+            RoleRepositoryInterface::class,
+            RoleRepository::class,
+        );
+        $this->app->singleton(
+            CourseRepositoryInterface::class,
+            CourseRepository::class,
+        );
+        $this->app->singleton(
+            UserRepositoryInterface::class,
+            UserRepository::class,
         );
     }
 
