@@ -319,11 +319,11 @@
                         </a>
 
                         @if (auth()->user()->can('update-task-progress'))
-                            <a class="btn btn-danger btn-sm ml-3 mb-2" data-toggle="modal" data-target="#deleteAttachment">
+                            <a class="btn btn-danger btn-sm ml-3 mb-2" data-toggle="modal" data-target="#deleteAttachment{{ $index }}">
                                 <i class="far fa-trash-alt">
                                 </i>
                             </a>
-                            <div class="modal fade" id="deleteAttachment" tabindex="-1" role="dialog" aria-labelledby="deleteAttachment" aria-hidden="true">
+                            <div class="modal fade" id="deleteAttachment{{ $index }}" tabindex="-1" role="dialog" aria-labelledby="deleteAttachment" aria-hidden="true">
                                 <div class="modal-dialog" role="document">
                                     <div class="modal-content">
                                         <div class="modal-header">

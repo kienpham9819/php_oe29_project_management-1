@@ -9,6 +9,12 @@ use App\Repositories\Role\RoleRepositoryInterface;
 use App\Repositories\Role\RoleRepository;
 use App\Repositories\Course\CourseRepositoryInterface;
 use App\Repositories\Course\CourseRepository;
+use App\Repositories\Task\TaskRepositoryInterface;
+use App\Repositories\Task\TaskRepository;
+use App\Repositories\TaskList\TaskListRepositoryInterface;
+use App\Repositories\TaskList\TaskListRepository;
+use App\Repositories\Attachment\AttachmentRepositoryInterface;
+use App\Repositories\Attachment\AttachmentRepository;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -20,12 +26,16 @@ class AppServiceProvider extends ServiceProvider
     public function register()
     {
         $this->app->singleton(
-            \App\Repositories\Task\TaskRepositoryInterface::class,
-            \App\Repositories\Task\TaskRepository::class,
+            TaskRepositoryInterface::class,
+            TaskRepository::class,
         );
         $this->app->singleton(
-            \App\Repositories\TaskList\TaskListRepositoryInterface::class,
-            \App\Repositories\TaskList\TaskListRepository::class,
+            TaskListRepositoryInterface::class,
+            TaskListRepository::class,
+        );
+        $this->app->singleton(
+            AttachmentRepositoryInterface::class,
+            AttachmentRepository::class,
         );
         $this->app->singleton(
             RoleRepositoryInterface::class,

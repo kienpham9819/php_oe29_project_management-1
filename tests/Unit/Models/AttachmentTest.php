@@ -24,7 +24,11 @@ class AttachmentTest extends TestCase
 
     public function test_contains_valid_fillable_properties()
     {
-        $this->assertEquals([], $this->model->getFillable());
+        $this->assertEquals([
+            'task_id',
+            'url',
+            'name',
+        ], $this->model->getFillable());
     }
 
     public function test_task_relation()
