@@ -15,6 +15,8 @@ use App\Repositories\TaskList\TaskListRepositoryInterface;
 use App\Repositories\TaskList\TaskListRepository;
 use App\Repositories\Attachment\AttachmentRepositoryInterface;
 use App\Repositories\Attachment\AttachmentRepository;
+use App\Repositories\Comment\CommentRepositoryInterface;
+use App\Repositories\Comment\CommentRepository;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -36,6 +38,10 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(
             AttachmentRepositoryInterface::class,
             AttachmentRepository::class,
+        );
+        $this->app->singleton(
+            CommentRepositoryInterface::class,
+            CommentRepository::class,
         );
         $this->app->singleton(
             RoleRepositoryInterface::class,
