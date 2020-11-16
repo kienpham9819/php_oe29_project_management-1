@@ -2,16 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Comment;
-use App\Models\Task;
 use Illuminate\Http\Request;
 use App\Http\Requests\CommentRequest;
+use App\Repositories\Comment\CommentRepositoryInterface;
 
 class CommentController extends Controller
 {
-    public function __construct()
+    protected $commentRepository, $taskRepository;
+
+    public function __construct(CommentRepositoryInterface $commentRepository)
     {
         $this->middleware('auth');
+        $this->commentRepository = $commentRepository;
     }
 
     /**
@@ -21,16 +23,16 @@ class CommentController extends Controller
      * @return \Illuminate\Http\Response
      */
 
-    public function show(Comment $comment)
+    public function show($id)
     {
-        return $comment;
+        return $this->commentRepository->find($id);
     }
 
-    public function store(Task $task, CommentRequest $request)
+    public function store($id, CommentRequest $request)
     {
-        Comment::create([
+        $this->commentRepository->create([
             'user_id' => auth()->user()->id,
-            'task_id' => $task->id,
+            'task_id' => $id,
             'content' => $request->content,
         ]);
 
@@ -43,9 +45,9 @@ class CommentController extends Controller
      * @param  \App\Models\Comment  $comment
      * @return \Illuminate\Http\Response
      */
-    public function update(CommentRequest $request, Comment $comment)
+    public function update(CommentRequest $request, $id)
     {
-        $comment->update([
+        $this->commentRepository->update($id, [
             'content' => $request->content,
         ]);
 
@@ -58,9 +60,9 @@ class CommentController extends Controller
      * @param  \App\Models\Comment  $comment
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Comment $comment)
+    public function destroy($id)
     {
-        $comment->delete();
+        $this->commentRepository->delete($id);
 
         return true;
     }
