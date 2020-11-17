@@ -9,6 +9,12 @@ class Attachment extends Model
 {
     use SoftDeletes;
 
+    protected $fillable = [
+        'task_id',
+        'url',
+        'name',
+    ];
+
     public function task()
     {
         return $this->belongsTo(Task::class);

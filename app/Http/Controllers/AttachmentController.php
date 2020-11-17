@@ -2,15 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Attachment;
 use Illuminate\Http\Request;
 use App\Http\Requests\AttachmentRequest;
+use App\Repositories\Attachment\AttachmentRepositoryInterface;
 
 class AttachmentController extends Controller
 {
-    public function __construct()
+    protected $attachmentRepository;
+
+    public function __construct(AttachmentRepositoryInterface $attachmentRepository)
     {
         $this->middleware('auth');
+        $this->attachmentRepository = $attachmentRepository;
     }
 
     /**
@@ -24,13 +27,13 @@ class AttachmentController extends Controller
         if ($request->hasFile('urls')) {
             $files = $request->file('urls');
             foreach ($files as $file) {
-                $attachment = new Attachment;
                 $name = $file->getClientOriginalName();
                 $path = $file->store('uploads', 'public');
-                $attachment->task_id = $request->task_id;
-                $attachment->url = $path;
-                $attachment->name = $name;
-                $attachment->save();
+                $this->attachmentRepository->create([
+                    'task_id' => $request->task_id,
+                    'url' => $path,
+                    'name' => $name,
+                ]);
             }
         }
 
@@ -43,9 +46,9 @@ class AttachmentController extends Controller
      * @param  \App\Models\Attachment  $attachment
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Attachment $attachment)
+    public function destroy($id)
     {
-        $attachment->delete();
+        $this->attachmentRepository->delete($id);
 
         return back();
     }
