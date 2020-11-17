@@ -10,12 +10,19 @@ use App\Models\Role;
 use App\Http\Requests\CourseRequest;
 use App\Imports\CoursesImport;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Repositories\Course\CourseRepositoryInterface;
+use App\Repositories\User\UserRepositoryInterface;
 
 class CourseController extends Controller
 {
-    public function __construct()
+    protected $courseRepository;
+    protected $userRepository;
+
+    public function __construct(CourseRepositoryInterface $courseRepository, UserRepositoryInterface $userRepository)
     {
         $this->middleware('auth');
+        $this->courseRepository = $courseRepository;
+        $this->userRepository = $userRepository;
     }
 
     /**
@@ -25,12 +32,15 @@ class CourseController extends Controller
      */
     public function index()
     {
-        $newCourses = getLatestCourses();
-        $courses = Course::orderBy('updated_at', 'desc')
-            ->withTrashed()->paginate(config('paginate.record_number'));
-        $lectures = Role::findOrFail(config('admin.lecturer'))->users()->get();
+        $newCourses = $this->courseRepository->getLatestCourses();
+        $courses = $this->courseRepository->getAllCourses();
+        $lectures = $this->userRepository->getLecturers();
 
-        return view('users.admin.course_list', compact(['courses', 'newCourses', 'lectures']));
+        return view('users.admin.course_list', compact([
+            'courses',
+            'newCourses',
+            'lectures',
+        ]));
     }
 
     /**
@@ -41,9 +51,9 @@ class CourseController extends Controller
      */
     public function store(CourseRequest $request)
     {
-        $user = User::findOrFail($request->lecturerId);
-        if ($user->hasRole('lecturer')) {
-            Course::create([
+        $user = $this->userRepository->find($request->lecturerId);
+        if ($this->userRepository->checkRoleForUser($user, 'lecturer')) {
+            $this->courseRepository->create([
                 'name' => $request->className,
                 'user_id' => $request->lecturerId,
             ]);
@@ -57,33 +67,31 @@ class CourseController extends Controller
             ->withInput($request->all());
     }
 
-    public function addUserToCourse(AddUserRequest $request, Course $course)
+    public function addUserToCourse(AddUserRequest $request, $id)
     {
-        $users = User::whereIn('id', $request->user_id)->get();
+        $users = $this->userRepository->getUsersToAddCourse($request->user_id);
         foreach ($users as $user) {
-            if ($user->hasRole('lecturer') || $user->hasRole('admin')) {
+            if ($this->userRepository->checkRoleForUser($user, 'lecturer') || $this->userRepository->checkRoleForUser($user, 'admin')) {
                 return redirect()->back()->withErrors(['add_member' => trans('course.permission_student')])->withInput($request->all());
             }
         }
-        $course->users()->attach($request->user_id);
+        $course = $this->courseRepository->find($id);
+        $this->userRepository->addUserToCourse($course, $request->user_id);
 
         return redirect()->back()->with('message', trans('course.noti_addUser'));
     }
 
-    public function deleteUserFromCourse(Request $request, Course $course, User $user)
+    public function deleteUserFromCourse($id, $userId)
     {
-        $course->users()->detach($user);
-        $group = $user->groups->where('course_id', $course->id)->first();
-        if ($group) {
-            $group->users()->detach($user);
-        }
+        $course = $this->courseRepository->find($id);
+        $this->userRepository->deleteUserFromCourse($course, $userId);
 
         return redirect()->back()->with('message', trans('course.noti_deleteUser'));
     }
 
     public function restoreCourse($id)
     {
-        Course::withTrashed()->where('id', $id)->restore();
+        $this->courseRepository->restoreCourse($id);
 
         return redirect()->route('courses.index')
             ->with('message', trans('course.noti_restore'));
@@ -97,16 +105,11 @@ class CourseController extends Controller
      */
     public function show($id)
     {
-        $course = Course::withTrashed()->with('user', 'groups', 'users')->where('courses.id', $id)->first();
-        $newCourses = getLatestCourses();
-        $userIds = Course::findOrFail($id)->users()->pluck('users.id');
+        $course = $this->courseRepository->getCourseEagerLoad($id);
+        $newCourses = $this->courseRepository->getLatestCourses();
+        $userIds = $this->courseRepository->getUserIdsInCourse($id);
         //get all user ,that has student role or leader role not exist in this course
-        $users = User::whereNotIn('id', $userIds)
-            ->whereIn('id', function ($query) {
-                $query->select('user_id')->from('role_user')
-                    ->where('role_id', config('admin.student'))
-                    ->orWhere('role_id', config('admin.leader'));
-            })->get();
+        $users = $this->userRepository->getUsersNotInCourse($userIds);
 
         return view('users.admin.course_detail', compact(['course', 'newCourses', 'users']));
     }
@@ -117,10 +120,11 @@ class CourseController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit(Course $course)
+    public function edit($id)
     {
-        $newCourses = getLatestCourses();
-        $lectures = Role::findOrFail(config('admin.lecturer'))->users()->get();
+        $course = $this->courseRepository->find($id);
+        $newCourses = $this->courseRepository->getLatestCourses();
+        $lectures = $this->userRepository->getLecturers();
 
         return view('users.admin.course_edit', compact(['course', 'newCourses', 'lectures']));
     }
@@ -132,11 +136,11 @@ class CourseController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(CourseRequest $request, Course $course)
+    public function update(CourseRequest $request, $id)
     {
-        $user = User::findOrFail($request->lecturerId);
-        if ($user->hasRole('lecturer')) {
-            $course->update([
+        $user = $this->userRepository->find($request->lecturerId);
+        if ($this->userRepository->checkRoleForUser($user, 'lecturer')) {
+            $this->courseRepository->update($id, [
                 'name' => $request->className,
                 'user_id' => $request->lecturerId,
             ]);
@@ -154,9 +158,9 @@ class CourseController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Course $course)
+    public function destroy($id)
     {
-        $course->delete();
+        $this->courseRepository->delete($id);
 
         return redirect()->route('courses.index')
             ->with('message', trans('course.noti_delete'));
