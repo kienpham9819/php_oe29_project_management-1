@@ -25,4 +25,14 @@ interface UserRepositoryInterface
     public function deleteUserFromCourse($course, $userId);
 
     public function getUsersNotInCourse($userIds);
+
+    public function hasRole($roleName);
+
+    public function getUsersNoGroup($userIds, $groupIds);
+
+    public function getUsersToAddGroup($userIds);
+
+    public function addLeader($group, $leaderId);
+
+    public function getLeader($groupIds);
 }

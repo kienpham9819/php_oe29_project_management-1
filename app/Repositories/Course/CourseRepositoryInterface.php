@@ -15,4 +15,8 @@ interface CourseRepositoryInterface extends RepositoryInterface
     public function getCourseEagerLoad($id);
 
     public function getUserIdsInCourse($id);
+
+    public function getGroupIds($group);
+
+    public function getUserIds($group);
 }

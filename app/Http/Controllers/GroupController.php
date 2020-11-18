@@ -9,12 +9,24 @@ use App\Models\Course;
 use App\Models\Group;
 use App\Models\User;
 use App\Models\Role;
+use App\Repositories\Group\GroupRepositoryInterface;
+use App\Repositories\User\UserRepositoryInterface;
+use App\Repositories\Course\CourseRepositoryInterface;
 
 class GroupController extends Controller
 {
-    public function __construct()
-    {
+    protected $groupRepository;
+    protected $userRepository;
+    protected $courseRepository;
+
+    public function __construct(GroupRepositoryInterface $groupRepository,
+        UserRepositoryInterface $userRepository,
+        CourseRepositoryInterface $courseRepository
+    ) {
         $this->middleware('auth');
+        $this->groupRepository = $groupRepository;
+        $this->userRepository = $userRepository;
+        $this->courseRepository = $courseRepository;
     }
 
     /**
@@ -23,69 +35,86 @@ class GroupController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Course $course, GroupRequest $request)
+    public function store($id, GroupRequest $request)
     {
+        $data = [
+            'name' => $request->name_group,
+            'course_id' => $id,
+        ];
+        $course = $this->courseRepository->find($id);
         $groups = $course->groups;
         if ($groups->contains('name', $request->name_group)) {
             return redirect()->back()
                 ->withErrors(['name_group' => trans('group.unique')])
                 ->withInput($request->all());
         }
-        Group::create([
-            'name' => $request->name_group,
-            'course_id' => $course->id,
-        ]);
+        $this->groupRepository->create($data);
 
         return redirect()->back()->with('message', trans('group.add_noti'));
     }
 
-    public function getUsersHasNoGroup(Group $group)
+    public function getUsersHasNoGroup($id)
     {
-        $groupIds = Course::findOrFail($group->course_id)->groups()->pluck('groups.id');
-        $userIds = Course::findOrFail($group->course_id)->users()->pluck('users.id');
+        $group = $this->groupRepository->find($id);
+        $groupIds = $this->courseRepository->getGroupIds($group);
+        $userIds = $this->courseRepository->getUserIds($group);
         // danh sách các user ko thuộc 1 group nào trong 1 class cụ thể
-        $users = User::whereIn('id', $userIds)
-            ->whereNotIn('id', function ($query) use ($groupIds) {
-                $query->select('user_id')->from('group_user')
-                    ->whereIn('group_id', $groupIds);
-            })->get();
+        $users = $this->userRepository->getUsersNoGroup($userIds, $groupIds);
 
         return $users;
     }
 
-    public function addUserToGroup(AddUserRequest $request, Group $group)
+    public function addUserToGroup(AddUserRequest $request, $id)
     {
-        $users = User::whereIn('id', $request->user_id)->get();
+        $userIds = $request->user_id;
+        $users = $this->userRepository->getUsersToAddGroup($userIds);
+        $group = $this->groupRepository->find($id);
         foreach ($users as $user) {
-            $nonGroupedUsers = $this->getUsersHasNoGroup($group);
-            if ($user->hasRole('lecturer') || $user->hasRole('admin')) {
-                return redirect()->back()->withErrors(['user_id' => trans('course.permission_student')]);
+            $nonGroupedUsers = $this->getUsersHasNoGroup($id);
+            if ($this->userRepository->checkRoleForUser($user, 'lecturer') || $this->userRepository->checkRoleForUser($user, 'admin')) {
+                if ($this->userRepository->hasRole('admin')) {
+                    return redirect()->route('groups.show', $id)->withErrors(['user_id' => trans('course.permission_student')]);
+                }
+
+                return redirect()->route('lecturers.groupDetail', $id)->withErrors(['user_id' => trans('course.permission_student')]);
             } elseif (!$nonGroupedUsers->contains($user)) {
-                return redirect()->back()->withErrors(['user_id' => trans('course.invalid')]);
+                if ($this->userRepository->hasRole('admin')) {
+                    return redirect()->route('groups.show', $id)->withErrors(['user_id' => trans('course.invalid')]);
+                }
+
+                return redirect()->route('lecturers.groupDetail', $id)->withErrors(['user_id' => trans('course.invalid')]);
             }
         }
-
-        $group->users()->attach($request->user_id);
-
-        return redirect()->back()->with('message', trans('group.noti_addUser'));
-    }
-
-    public function addLeaderToGroup(Request $request, Group $group)
-    {
-        foreach ($group->users as $user) {
-            $group->users()->updateExistingPivot($user->id, ['is_leader' => config('admin.isNotLeader')]);
+        $this->groupRepository->addUsersToGroup($group, $userIds);
+        if ($this->userRepository->hasRole('admin')) {
+            return redirect()->route('groups.show', $id)->with('message', trans('group.noti_addUser'));
         }
-        $group->users()->updateExistingPivot($request->leader, ['is_leader' => config('admin.isLeader')]);
-        Role::findOrFail(config('admin.leader'))->users()->syncWithoutDetaching($request->leader);
 
-        return redirect()->back()->with('message', trans('group.noti_addLeader'));
+        return redirect()->route('lecturers.groupDetail', $id)->with('message', trans('group.noti_addUser'));
     }
 
-    public function deleteUserFromGroup(Group $group, User $user)
+    public function addLeaderToGroup(Request $request, $id)
     {
-        $group->users()->detach($user);
+        $leaderId = $request->leader;
+        $group = $this->groupRepository->find($id);
+        $this->userRepository->addLeader($group, $leaderId);
+        if ($this->userRepository->hasRole('admin')) {
+            return redirect()->route('groups.show', $id)->with('message', trans('group.noti_addLeader'));
+        }
 
-        return redirect()->back()->with('message', trans('group.noti_deleteUser'));
+        return redirect()->route('lecturers.groupDetail', $id)->with('message', trans('group.noti_addLeader'));
+    }
+
+    public function deleteUserFromGroup($groupId, $userId)
+    {
+        $group = $this->groupRepository->find($groupId);
+        $user = $this->userRepository->find($userId);
+        $this->groupRepository->deleteUser($group, $user);
+        if ($this->userRepository->hasRole('admin')) {
+            return redirect()->route('groups.show', $groupId)->with('message', trans('group.noti_deleteUser'));
+        }
+
+        return redirect()->route('lecturers.groupDetail', $groupId)->with('message', trans('group.noti_deleteUser'));
     }
 
     /**
@@ -94,14 +123,12 @@ class GroupController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(Group $group)
+    public function show($id)
     {
-        $newCourses = getLatestCourses();
-        $leader = User::whereIn('id', function ($query) use ($group) {
-            $query->select('user_id')->from('group_user')->where('is_leader', config('admin.isLeader'))
-                ->where('group_id', $group->id);
-        })->first();
-        $users = $this->getUsersHasNoGroup($group);
+        $group = $this->groupRepository->find($id);
+        $newCourses = $this->courseRepository->getLatestCourses();
+        $users = $this->getUsersHasNoGroup($id);
+        $leader = $this->userRepository->getLeader($id);
 
         return view('users.admin.group_detail', compact(['group', 'newCourses', 'users', 'leader']));
     }
@@ -112,9 +139,10 @@ class GroupController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit(Group $group)
+    public function edit($id)
     {
-        $newCourses = getLatestCourses();
+        $group = $this->groupRepository->find($id);
+        $newCourses = $this->courseRepository->getLatestCourses();
 
         return view('users.admin.group_edit', compact(['group', 'newCourses']));
     }
@@ -126,21 +154,19 @@ class GroupController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(GroupRequest $request, Group $group)
+    public function update(GroupRequest $request, $id)
     {
+        $group = $this->groupRepository->find($id);
         $course = Course::findOrFail($group->course_id);
         $groups = $course->groups()->where('name', '!=', $group->name)->get();
         if ($groups->contains('name', $request->name_group)) {
             return redirect()->back()
                 ->withErrors(['name_group' => trans('group.unique')])
                 ->withInput($request->all());
-        } else {
-            $group->update([
-                'name' => $request->name_group,
-            ]);
-
-            return redirect()->route('courses.show', $group->course_id)->with('message', trans('group.edit_noti'));
         }
+        $this->groupRepository->update($id, ['name' => $request->name_group]);
+
+        return redirect()->route('courses.show', $group->course_id)->with('message', trans('group.edit_noti'));
     }
 
     /**
@@ -149,18 +175,15 @@ class GroupController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Group $group)
+    public function destroy($id)
     {
-        $users = $group->users;
-        $project = $group->project;
-        if ($project) {
-            $project->delete();
-        }
-        if ($users) {
-            $group->users()->detach($users);
-        }
-        $group->delete();
+        $group = $this->groupRepository->find($id);
+        $this->groupRepository->delete($id);
 
-        return redirect()->back()->with('message', trans('group.delete_noti'));
+        if ($this->userRepository->hasRole('admin')) {
+            return redirect()->route('courses.show', $group->course_id)->with('message', trans('group.delete_noti'));
+        }
+
+        return redirect()->route('lecturers.courseDetail', $group->course_id)->with('message', trans('group.delete_noti'));
     }
 }
