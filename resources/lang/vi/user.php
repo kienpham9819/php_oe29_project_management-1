@@ -15,6 +15,7 @@ return [
     'excel' => 'Nhập bằng excel',
     'force_delete' => 'Xóa hoàn toàn',
     'import' => 'Nhập từ file excel',
+    'link_github' => 'Liên kết tài khoản với Github',
     'name' => 'Tên',
     'new_password' => 'Nhập mật khẩu mới',
     'noti_add' => 'Bạn đã thêm thành công',

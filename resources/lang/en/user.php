@@ -15,6 +15,7 @@ return [
     'excel' => 'Import excel',
     'force_delete' => 'Force Delete',
     'import' => 'Import excel',
+    'link_github' => 'Link your account to Github',
     'name' => 'Name',
     'new_password' => 'Enter new password',
     'noti_add' => 'Added success',

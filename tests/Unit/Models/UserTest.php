@@ -41,6 +41,7 @@ class UserTest extends TestCase
         $this->assertEquals([
             'password',
             'remember_token',
+            'github_token',
         ], $this->user->getHidden());
     }
 

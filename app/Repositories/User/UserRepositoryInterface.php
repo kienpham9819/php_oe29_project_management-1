@@ -39,4 +39,8 @@ interface UserRepositoryInterface
     public function changePassword($user, $password);
 
     public function hasPermissionTo($user, $permission);
+
+    public function storeGithubToken($id, $token);
+
+    public function getGithubRepositories($id, $userAgent);
 }

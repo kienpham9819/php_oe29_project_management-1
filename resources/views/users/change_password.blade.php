@@ -57,8 +57,13 @@
                         @enderror
                     </div>
 
-                    <button type="submit" class="btn btn-primary">{{ trans('user.save') }}</button>
+                    <button type="submit" class="btn btn-outline-primary text-uppercase w-100">{{ trans('user.save') }}</button>
                 </form>
+                <hr>
+                <a class="btn btn-outline-dark w-100 text-uppercase" href="{{ route('social.auth', ['github']) }}">
+                    <i class="fab fa-github"></i>
+                    {{ trans('user.link_github') }}
+                </a>
             </div>
         </div>
     </div>
