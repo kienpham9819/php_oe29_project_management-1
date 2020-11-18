@@ -30,6 +30,8 @@ class ProjectTest extends TestCase
             'name',
             'description',
             'group_id',
+            'review',
+            'grade',
         ], $this->model->getFillable());
     }
 

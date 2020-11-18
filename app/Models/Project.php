@@ -13,6 +13,8 @@ class Project extends Model
         'name',
         'description',
         'group_id',
+        'review',
+        'grade',
     ];
 
     public function group()
