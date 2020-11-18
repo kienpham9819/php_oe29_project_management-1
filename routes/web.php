@@ -124,3 +124,6 @@ Route::patch('update-group-lecturer/{group}', 'LecturerController@updateGroup')-
     ->middleware('permission:update-group', 'can:update,group');
 Route::get('group-detail/{group}', 'LecturerController@groupDetail')->name('lecturers.groupDetail')
     ->middleware('permission:view-group', 'can:view,group');
+
+Route::get('/auth/{driver}', 'SocialLoginController@redirectToProvider')->name('social.auth');
+Route::get('/auth/callback/{driver}', 'SocialLoginController@handleProviderCallback')->name('social.callback');
