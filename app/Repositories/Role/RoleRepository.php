@@ -12,4 +12,16 @@ class RoleRepository extends BaseRepository implements RoleRepositoryInterface
     {
         return Role::class;
     }
+
+    public function update($id, $permissionIds = [])
+    {
+        $role = $this->find($id);
+        if ($role) {
+            $role->permissions()->sync($permissionIds);
+
+            return $role;
+        }
+
+        return false;
+    }
 }

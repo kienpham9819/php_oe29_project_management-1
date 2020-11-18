@@ -34,5 +34,9 @@ interface UserRepositoryInterface
 
     public function addLeader($group, $leaderId);
 
-    public function getLeader($groupIds);
+    public function getLeader($groupId);
+
+    public function changePassword($user, $password);
+
+    public function hasPermissionTo($user, $permission);
 }

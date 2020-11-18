@@ -8,6 +8,9 @@ use App\Models\Course;
 use App\Models\Permission;
 use Illuminate\Support\Str;
 use App\Http\Requests\RoleRequest;
+use App\Repositories\Role\RoleRepositoryInterface;
+use App\Repositories\Course\CourseRepositoryInterface;
+use App\Repositories\Permission\PermissionRepositoryInterface;
 
 class RoleController extends Controller
 {
@@ -16,15 +19,25 @@ class RoleController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function __construct()
-    {
+    protected $roleRepository;
+    protected $courseRepository;
+    protected $permissionRepository;
+
+    public function __construct(
+        RoleRepositoryInterface $roleRepository,
+        CourseRepositoryInterface $courseRepository,
+        PermissionRepositoryInterface $permissionRepository
+    ) {
         $this->middleware('auth');
+        $this->roleRepository = $roleRepository;
+        $this->courseRepository = $courseRepository;
+        $this->permissionRepository = $permissionRepository;
     }
 
     public function index()
     {
-        $roles = Role::all();
-        $newCourses = getLatestCourses();
+        $roles = $this->roleRepository->getAll();
+        $newCourses = $this->courseRepository->getLatestCourses();
 
         return view('users.admin.role_list', compact(['roles', 'newCourses']));
     }
@@ -35,10 +48,11 @@ class RoleController extends Controller
      * @return \Illuminate\Http\Response
      */
 
-    public function edit(Role $role)
+    public function edit($id)
     {
-        $permissions = Permission::all();
-        $newCourses = getLatestCourses();
+        $role = $this->roleRepository->find($id);
+        $permissions = $this->permissionRepository->getAll();
+        $newCourses = $this->courseRepository->getLatestCourses();
 
         return view('users.admin.role_edit', compact(['role', 'permissions', 'newCourses']));
     }
@@ -50,9 +64,9 @@ class RoleController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(RoleRequest $request, Role $role)
+    public function update($id, RoleRequest $request)
     {
-        $role->permissions()->sync($request->permission);
+        $this->roleRepository->update($id, $request->permission);
 
         return redirect()->route('roles.index')
             ->with('message', trans('role.noti_edit'));

@@ -2,7 +2,9 @@
 
 namespace App\Repositories\Role;
 
-interface RoleRepositoryInterface
+use App\Repositories\RepositoryInterface;
+
+interface RoleRepositoryInterface extends RepositoryInterface
 {
-   //
+   public function update($id, $permissionIds = []);
 }
