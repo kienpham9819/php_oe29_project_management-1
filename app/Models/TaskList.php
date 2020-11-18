@@ -14,6 +14,14 @@ class TaskList extends Model
         'start_date',
     ];
 
+    protected $fillable = [
+        'name',
+        'description',
+        'due_date',
+        'user_id',
+        'project_id',
+    ];
+
     public function project()
     {
         return $this->belongsTo(Project::class);

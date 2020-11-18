@@ -3,18 +3,21 @@
 namespace App\Http\Controllers;
 
 use App\Charts\ActivityChart;
-use App\Models\TaskList;
 use App\Models\Project;
 use App\Http\Requests\TaskListRequest;
 use DB;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use App\Repositories\TaskList\TaskListRepositoryInterface;
 
 class TaskListController extends Controller
 {
-    public function __construct()
+    protected $taskListRepository, $projectRepository;
+
+    public function __construct(TaskListRepositoryInterface $taskListRepository)
     {
         $this->middleware('auth');
+        $this->taskListRepository = $taskListRepository;
     }
     /**
      * Display a listing of the resource.
@@ -76,13 +79,13 @@ class TaskListController extends Controller
         if (!$project->group->users->contains($request->user_id)) {
             abort(403);
         }
-        $taskList = new TaskList;
-        $taskList->name = $request->name;
-        $taskList->description = $request->description;
-        $taskList->due_date = $request->due_date;
-        $taskList->user_id = $request->user_id;
-        $taskList->project_id = $project->id;
-        $taskList->save();
+        $this->taskListRepository->create([
+            'name' => $request->name,
+            'description' => $request->description,
+            'user_id' => $request->user_id,
+            'due_date' => $request->due_date,
+            'project_id' => $project->id,
+        ]);
 
         return redirect()->route('projects.task-lists.index', [$project->id]);
     }
@@ -93,12 +96,18 @@ class TaskListController extends Controller
      * @param  \App\Models\TaskList  $taskList
      * @return \Illuminate\Http\Response
      */
-    public function show(Project $project, TaskList $taskList)
+    public function show(Project $project, $taskList)
     {
-        $taskList->load('tasks.comments', 'tasks.attachments');
-        $chart = $this->createActivityChart($taskList);
-        $completed = $taskList->tasks->where('is_completed', 1)->count();
-        $unfinished = $taskList->tasks->where('is_completed', 0)->count();
+        $taskList = $this->taskListRepository->find($taskList, ['tasks.comments', 'tasks.attachments']);
+        $chart = $this->createActivityChart($taskList->id);
+        $completed = $this->taskListRepository->completedTask($taskList->id);
+        if ($completed === false) {
+            abort(404);
+        }
+        $unfinished = $this->taskListRepository->unfinishedTask($taskList->id);
+        if ($unfinished === false) {
+            abort(404);
+        }
         $user = auth()->user();
         if ($user->hasRole('student')) {
             return view('projects.lists.show', compact([
@@ -133,11 +142,17 @@ class TaskListController extends Controller
      * @param  \App\Models\TaskList  $taskList
      * @return \Illuminate\Http\Response
      */
-    public function edit(Project $project, TaskList $taskList)
+    public function edit(Project $project, $taskList)
     {
-        $taskList->load('tasks.comments', 'tasks.attachments');
-        $completed = $taskList->tasks->where('is_completed', 1)->count();
-        $unfinished = $taskList->tasks->where('is_completed', 0)->count();
+        $taskList = $this->taskListRepository->find($taskList, ['tasks.comments', 'tasks.attachments']);
+        $completed = $this->taskListRepository->completedTask($taskList->id);
+        if ($completed === false) {
+            abort(404);
+        }
+        $unfinished = $this->taskListRepository->unfinishedTask($taskList->id);
+        if ($unfinished === false) {
+            abort(404);
+        }
         $project->load('group.users');
         if (auth()->user()->hasRole('student')) {
             return view('projects.lists.edit', compact([
@@ -185,28 +200,22 @@ class TaskListController extends Controller
      * @param  \App\Models\TaskList  $taskList
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Project $project, TaskList $taskList)
+    public function destroy(Project $project, $taskList)
     {
-        $taskList->delete();
+        $this->taskListRepository->delete($taskList);
 
         return redirect()->route('projects.task-lists.index', [$project->id]);
     }
 
-    private function createActivityChart(TaskList $taskList)
+    private function createActivityChart($id)
     {
-        $taskList->load('tasks');
         $chart = new ActivityChart;
         $labels = [];
         $data = [];
         $tomorrow = Carbon::tomorrow()->toDateString();
         $date = Carbon::today()->subWeek();
 
-        $tasks = $taskList->tasks()
-            ->where('is_completed', 1)
-            ->orderBy('tasks.updated_at', 'desc')
-            ->select(DB::raw('count(tasks.updated_at) as activities, date(`tasks`.`updated_at`) as date'))
-            ->groupBy('date')
-            ->get();
+        $tasks = $this->taskListRepository->activities($id);
 
         do {
             $date = $date->addDay();

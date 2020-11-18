@@ -24,6 +24,17 @@ class TaskListTest extends TestCase
         unset($this->model);
     }
 
+    public function test_role_contains_valid_fillable_properties()
+    {
+        $this->assertEquals([
+            'name',
+            'description',
+            'due_date',
+            'user_id',
+            'project_id',
+        ], $this->model->getFillable());
+    }
+
     public function test_contains_valid_dates_properties()
     {
         $this->assertEquals([
