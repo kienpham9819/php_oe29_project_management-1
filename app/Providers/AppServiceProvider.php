@@ -17,6 +17,8 @@ use App\Repositories\Attachment\AttachmentRepositoryInterface;
 use App\Repositories\Attachment\AttachmentRepository;
 use App\Repositories\Comment\CommentRepositoryInterface;
 use App\Repositories\Comment\CommentRepository;
+use App\Repositories\Group\GroupRepositoryInterface;
+use App\Repositories\Group\GroupRepository;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -54,6 +56,10 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(
             UserRepositoryInterface::class,
             UserRepository::class,
+        );
+        $this->app->singleton(
+            GroupRepositoryInterface::class,
+            GroupRepository::class,
         );
     }
 
