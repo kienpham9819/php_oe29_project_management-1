@@ -15,6 +15,7 @@ use App\Repositories\User\UserRepositoryInterface;
 use App\Repositories\Role\RoleRepositoryInterface;
 use App\Repositories\Course\CourseRepositoryInterface;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Collection;
 
 class UserControllerTest extends TestCase
 {
@@ -91,16 +92,12 @@ class UserControllerTest extends TestCase
 
     public function test_edit_returns_view()
     {
-        $data = [
-            'id' => 10,
-            'name' => 'Kien',
-            'email' => 'k@gmail.com',
-            'password' => '1234567',
-        ];
-        $user = $this->user->forceFill($data);
-        $this->roleMock->shouldReceive('getAll');
-        $this->courseMock->shouldReceive('getLatestCourses');
-        $view = $this->controller->edit($user);
+        $user = factory(User::class, 1)->make();
+        $id = 10;
+        $this->roleMock->shouldReceive('getAll')->andReturn(new Collection);
+        $this->courseMock->shouldReceive('getLatestCourses')->andReturn(new Collection);
+        $this->userMock->shouldReceive('find')->with($id)->andReturn($user[0]);
+        $view = $this->controller->edit($id);
         $this->assertEquals('users.admin.edit', $view->getName());
         $this->assertArrayHasKey('user', $view->getData());
         $this->assertArrayHasKey('roles', $view->getData());
@@ -127,15 +124,10 @@ class UserControllerTest extends TestCase
 
     public function test_destroy_user()
     {
-        $data = [
-            'id' => 10,
-            'name' => 'Kien',
-            'email' => 'k@gmail.com',
-            'password' => '1234567',
-        ];
-        $user = $this->user->forceFill($data);
-        $this->userMock->shouldReceive('delete')->with($user->id);
-        $response = $this->controller->destroy($user);
+        $user = factory(User::class, 1)->make();
+        $id = 10;
+        $this->userMock->shouldReceive('delete')->with($id)->andReturn(true);
+        $response = $this->controller->destroy($id);
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertEquals(route('users.index'), $response->headers->get('Location'));
         $this->assertEquals(trans('user.noti_delete'), $response->getSession()->get('message'));
@@ -155,19 +147,11 @@ class UserControllerTest extends TestCase
         $request = new EditUserRequest();
         $request->headers->set('content-type', 'application/json');
         $request->setJson(new ParameterBag($dataUpdate));
-        $dataUser = [
-            'id' => 10,
-            'name' => 'Kien',
-            'email' => 'k@gmail.com',
-            'password' => '1234567',
-        ];
-        $user = $this->user->forceFill($dataUser);
-        $this->userMock->shouldReceive('updateUser')->withAnyArgs($user, [
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => $request->password,
-        ], $request['roles']);
-        $response = $this->controller->update($request, $user);
+        $user = factory(User::class, 1)->make();
+        $id = 10;
+        $this->userMock->shouldReceive('find')->with($id)->andReturn($user[0]);
+        $this->userMock->shouldReceive('updateUser');
+        $response = $this->controller->update($request, $id);
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertEquals(route('users.index'), $response->headers->get('Location'));
         $this->assertEquals(trans('user.noti_edit'), $response->getSession()->get('message'));
@@ -186,18 +170,11 @@ class UserControllerTest extends TestCase
         $request = new EditUserRequest();
         $request->headers->set('content-type', 'application/json');
         $request->setJson(new ParameterBag($dataUpdate));
-        $dataUser = [
-            'id' => 10,
-            'name' => 'Kien',
-            'email' => 'k@gmail.com',
-            'password' => '1234567',
-        ];
-        $user = $this->user->forceFill($dataUser);
-        $this->userMock->shouldReceive('updateUser')->withAnyArgs($user, [
-            'name' => $request->name,
-            'email' => $request->email,
-        ], $request['roles']);
-        $response = $this->controller->update($request, $user);
+        $user = factory(User::class, 1)->make();
+        $id = 10;
+        $this->userMock->shouldReceive('find')->with($id)->andReturn($user[0]);
+        $this->userMock->shouldReceive('updateUser');
+        $response = $this->controller->update($request, $id);
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertEquals(route('users.index'), $response->headers->get('Location'));
         $this->assertEquals(trans('user.noti_edit'), $response->getSession()->get('message'));

@@ -88,8 +88,9 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit(User $user)
+    public function edit($id)
     {
+        $user = $this->userRepository->find($id);
         $roles = $this->roleRepository->getAll();
         $newCourses = $this->courseRepository->getLatestCourses();
 
@@ -103,8 +104,9 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(EditUserRequest $request, User $user)
+    public function update(EditUserRequest $request, $id)
     {
+        $user = $this->userRepository->find($id);
         $dataUpdate = [
             'name' => $request->name,
             'email' => $request->email,
@@ -124,9 +126,9 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(User $user)
+    public function destroy($id)
     {
-        $this->userRepository->delete($user->id);
+        $this->userRepository->delete($id);
 
         return redirect()->route('users.index')
             ->with('message', trans('user.noti_delete'));
