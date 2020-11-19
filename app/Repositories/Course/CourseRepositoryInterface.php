@@ -19,4 +19,8 @@ interface CourseRepositoryInterface extends RepositoryInterface
     public function getGroupIds($group);
 
     public function getUserIds($group);
+
+    public function getCoursesForLecturer($user);
+
+    public function getLastestCoursesForLecturer($user);
 }
