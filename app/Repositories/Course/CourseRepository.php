@@ -53,4 +53,27 @@ class CourseRepository extends BaseRepository implements CourseRepositoryInterfa
     {
         return Course::findOrFail($group->course_id)->users()->pluck('users.id');
     }
+
+    public function getCoursesForLecturer($user)
+    {
+        $courses = $user->teaches()->paginate(config('paginate.record_number'));
+
+        return $courses;
+    }
+
+    public function getLastestCoursesForLecturer($user)
+    {
+        $courses = $user->teaches()
+            ->orderBy('updated_at', 'desc')
+            ->limit(config('app.display_limit'))->get();
+
+        return $courses;
+    }
+
+    public function getCourseEagerLoadForLecturer($id)
+    {
+        $course = Course::with('groups', 'users')->where('courses.id', $id)->first();
+
+        return $course;
+    }
 }

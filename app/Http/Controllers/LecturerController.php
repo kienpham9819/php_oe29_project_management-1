@@ -8,21 +8,31 @@ use App\Http\Requests\AddUserRequest;
 use App\Models\Course;
 use App\Models\Group;
 use App\Models\User;
+use App\Repositories\Group\GroupRepositoryInterface;
+use App\Repositories\User\UserRepositoryInterface;
+use App\Repositories\Course\CourseRepositoryInterface;
 
 class LecturerController extends Controller
 {
-    public function __construct()
-    {
+    protected $groupRepository;
+    protected $userRepository;
+    protected $courseRepository;
+
+    public function __construct(GroupRepositoryInterface $groupRepository,
+        UserRepositoryInterface $userRepository,
+        CourseRepositoryInterface $courseRepository
+    ) {
         $this->middleware('auth');
+        $this->groupRepository = $groupRepository;
+        $this->userRepository = $userRepository;
+        $this->courseRepository = $courseRepository;
     }
 
     public function listCourse()
     {
         $user = auth()->user();
-        $courses = $user->teaches()->paginate(config('paginate.record_number'));
-        $newCourses = $user->teaches()
-            ->orderBy('updated_at', 'desc')
-            ->limit(config('app.display_limit'))->get();
+        $courses = $this->courseRepository->getCoursesForLecturer($user);
+        $newCourses = $this->courseRepository->getLastestCoursesForLecturer($user);
 
         return view('users.lecturer.course_list', compact([
             'courses',
@@ -30,12 +40,12 @@ class LecturerController extends Controller
         ]));
     }
 
-    public function showDetailCourse(Course $course)
+    public function showDetailCourse($id)
     {
-        $course = Course::with('groups', 'users')->where('courses.id', $course->id)->first();
-        $newCourses = auth()->user()->teaches()
-            ->orderBy('updated_at', 'desc')
-            ->limit(config('app.display_limit'))->get();
+        $course = $this->courseRepository->find($id);
+        $this->authorize('view', $course);
+        $course = $this->courseRepository->getCourseEagerLoadForLecturer($id);
+        $newCourses = $this->courseRepository->getLastestCoursesForLecturer(auth()->user());
 
         return view('users.lecturer.course_detail', compact([
             'course',
@@ -43,11 +53,11 @@ class LecturerController extends Controller
         ]));
     }
 
-    public function showFormEditGroup(Group $group)
+    public function showFormEditGroup($id)
     {
-        $newCourses = auth()->user()->teaches()
-            ->orderBy('updated_at', 'desc')
-            ->limit(config('app.display_limit'))->get();
+        $group = $this->groupRepository->find($id);
+        $this->authorize('update', $group);
+        $newCourses = $this->courseRepository->getLastestCoursesForLecturer(auth()->user());
 
         return view('users.lecturer.group_edit', compact([
             'group',
@@ -55,62 +65,48 @@ class LecturerController extends Controller
         ]));
     }
 
-    public function updateGroup(GroupRequest $request, Group $group)
+    public function updateGroup(GroupRequest $request, $id)
     {
-        $course = Course::findOrFail($group->course_id);
+        $group = $this->groupRepository->find($id);
+        $this->authorize('update', $group);
+        $course = $this->courseRepository->find($group->course_id);
         $groups = $course->groups()->where('name', '!=', $group->name)->get();
         if ($groups->contains('name', $request->name_group)) {
             return redirect()->back()
                 ->withErrors(['name_group' => trans('group.unique')])
                 ->withInput($request->all());
         } else {
-            $group->update([
-                'name' => $request->name_group,
-            ]);
+            $this->groupRepository->update($id, ['name' => $request->name_group]);
 
             return redirect()->route('lecturers.courseDetail', $group->course_id)->with('message', trans('group.edit_noti'));
         }
     }
 
-    public function deleteGroup(Group $group)
+    public function deleteGroup($id)
     {
-        $users = $group->users;
-        $project = $group->project;
-        if ($project) {
-            $project->delete();
-        }
-        if ($users) {
-            $group->users()->detach($users);
-        }
-        $group->delete();
+        $group = $this->groupRepository->find($id);
+        $this->groupRepository->delete($id);
 
-        return redirect()->back()->with('message', trans('group.delete_noti'));
+        return redirect()->route('lecturers.courseDetail', $group->course_id)->with('message', trans('group.delete_noti'));
     }
 
-    public function getUsersHasNoGroup(Group $group)
+    public function getUsersHasNoGroup($id)
     {
-        $groupIds = Course::findOrFail($group->course_id)->groups()->pluck('groups.id');
-        $userIds = Course::findOrFail($group->course_id)->users()->pluck('users.id');
-        // danh sách các user ko thuộc 1 group nào trong 1 class cụ thể
-        $users = User::whereIn('id', $userIds)
-            ->whereNotIn('id', function ($query) use ($groupIds) {
-                $query->select('user_id')->from('group_user')
-                    ->whereIn('group_id', $groupIds);
-            })->get();
+        $group = $this->groupRepository->find($id);
+        $groupIds = $this->courseRepository->getGroupIds($group);
+        $userIds = $this->courseRepository->getUserIds($group);
+        $users = $this->userRepository->getUsersNoGroup($userIds, $groupIds);
 
         return $users;
     }
 
-    public function groupDetail(Group $group)
+    public function groupDetail($id)
     {
-        $leader = User::whereIn('id', function ($query) use ($group) {
-            $query->select('user_id')->from('group_user')->where('is_leader', config('admin.isLeader'))
-                ->where('group_id', $group->id);
-        })->first();
-        $users = $this->getUsersHasNoGroup($group);
-        $newCourses = auth()->user()->teaches()
-            ->orderBy('updated_at', 'desc')
-            ->limit(config('app.display_limit'))->get();
+        $group = $this->groupRepository->find($id);
+        $this->authorize('view', $group);
+        $users = $this->getUsersHasNoGroup($id);
+        $leader = $this->userRepository->getLeader($id);
+        $newCourses = $this->courseRepository->getLastestCoursesForLecturer(auth()->user());
 
         return view('users.lecturer.group_detail', compact([
             'group',

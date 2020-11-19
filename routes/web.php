@@ -91,7 +91,7 @@ Route::delete('deleteUser/{course}/{user}', 'CourseController@deleteUserFromCour
     ->middleware('role:admin');
 
 Route::post('add-group/{course}/groups', 'GroupController@store')->name('courses.groups.store')
-    ->middleware('permission:create-group', 'can:create,course');
+    ->middleware('permission:create-group');
 Route::get('show-detail-group/{group}', 'GroupController@show')->name('groups.show')
     ->middleware('permission:view-group', 'can:view,group');
 Route::get('edit-group/{group}/edit', 'GroupController@edit')->name('groups.edit')
@@ -117,13 +117,13 @@ Route::get('group-detail-student/{group}', 'StudentController@showDetailGroup')-
 Route::get('course-list-lecturer', 'LecturerController@listCourse')->name('lecturers.courseList')
     ->middleware('permission:view-class');
 Route::get('course-detail-lecturer/{course}', 'LecturerController@showDetailCourse')->name('lecturers.courseDetail')
-    ->middleware('permission:view-class', 'can:view,course');
+    ->middleware('permission:view-class');
 Route::get('show-form-edit-group/{group}/edit', 'LecturerController@showFormEditGroup')->name('lecturers.showFormEditGroup')
-    ->middleware('permission:update-group', 'can:update,group');
+    ->middleware('permission:update-group');
 Route::patch('update-group-lecturer/{group}', 'LecturerController@updateGroup')->name('lecturers.updateGroup')
-    ->middleware('permission:update-group', 'can:update,group');
+    ->middleware('permission:update-group');
 Route::get('group-detail/{group}', 'LecturerController@groupDetail')->name('lecturers.groupDetail')
-    ->middleware('permission:view-group', 'can:view,group');
+    ->middleware('permission:view-group');
 
 Route::get('/auth/{driver}', 'SocialLoginController@redirectToProvider')->name('social.auth');
 Route::get('/auth/callback/{driver}', 'SocialLoginController@handleProviderCallback')->name('social.callback');

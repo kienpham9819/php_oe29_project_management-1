@@ -42,6 +42,7 @@ class GroupController extends Controller
             'course_id' => $id,
         ];
         $course = $this->courseRepository->find($id);
+        $this->authorize('create', $course);
         $groups = $course->groups;
         if ($groups->contains('name', $request->name_group)) {
             return redirect()->back()
