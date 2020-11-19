@@ -18,8 +18,10 @@ class CourseController extends Controller
     protected $courseRepository;
     protected $userRepository;
 
-    public function __construct(CourseRepositoryInterface $courseRepository, UserRepositoryInterface $userRepository)
-    {
+    public function __construct(
+        CourseRepositoryInterface $courseRepository,
+        UserRepositoryInterface $userRepository
+    ) {
         $this->middleware('auth');
         $this->courseRepository = $courseRepository;
         $this->userRepository = $userRepository;
