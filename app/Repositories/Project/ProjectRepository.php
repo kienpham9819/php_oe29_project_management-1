@@ -2,6 +2,7 @@
 
 namespace App\Repositories\Project;
 
+use App\Repositories\Project\ProjectRepositoryInterface;
 use App\Repositories\BaseRepository;
 use App\Models\Project;
 
@@ -57,5 +58,15 @@ class ProjectRepository extends BaseRepository implements ProjectRepositoryInter
                 ->orderBy('updated_at', 'desc')
                 ->with(['tasks', 'group.course']);
         }
+    }
+
+    public function getLastestProject($groups)
+    {
+        $projects = Project::whereIn('group_id', $groups)
+            ->with('group.course')
+            ->orderBy('updated_at', 'desc')->get();
+        $projects->splice(config('app.display_limit'));
+
+        return $projects;
     }
 }

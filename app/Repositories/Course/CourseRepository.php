@@ -61,9 +61,25 @@ class CourseRepository extends BaseRepository implements CourseRepositoryInterfa
         return $courses;
     }
 
+    public function getCoursesForStudent($user)
+    {
+        $courses = $user->courses()->paginate(config('paginate.record_number'));
+
+        return $courses;
+    }
+
     public function getLastestCoursesForLecturer($user)
     {
         $courses = $user->teaches()
+            ->orderBy('updated_at', 'desc')
+            ->limit(config('app.display_limit'))->get();
+
+        return $courses;
+    }
+
+    public function getLastestCoursesForStudent($user)
+    {
+        $courses = $user->courses()
             ->orderBy('updated_at', 'desc')
             ->limit(config('app.display_limit'))->get();
 

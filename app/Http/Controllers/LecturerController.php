@@ -18,7 +18,8 @@ class LecturerController extends Controller
     protected $userRepository;
     protected $courseRepository;
 
-    public function __construct(GroupRepositoryInterface $groupRepository,
+    public function __construct(
+        GroupRepositoryInterface $groupRepository,
         UserRepositoryInterface $userRepository,
         CourseRepositoryInterface $courseRepository
     ) {

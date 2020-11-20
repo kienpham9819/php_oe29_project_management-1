@@ -14,6 +14,8 @@ interface CourseRepositoryInterface extends RepositoryInterface
 
     public function getCourseEagerLoad($id);
 
+    public function getCourseEagerLoadForLecturer($id);
+
     public function getUserIdsInCourse($id);
 
     public function getGroupIds($group);
@@ -23,4 +25,8 @@ interface CourseRepositoryInterface extends RepositoryInterface
     public function getCoursesForLecturer($user);
 
     public function getLastestCoursesForLecturer($user);
+
+    public function getCoursesForStudent($user);
+
+    public function getLastestCoursesForStudent($user);
 }

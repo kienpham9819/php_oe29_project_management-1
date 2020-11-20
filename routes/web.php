@@ -111,9 +111,9 @@ Route::post('add-leader-to-group/{group}', 'GroupController@addLeaderToGroup')->
 Route::get('course-list-student', 'StudentController@listCourse')->name('students.courseList')
     ->middleware('role:student,leader');
 Route::get('course-detail-student/{course}', 'StudentController@showDetailCourse')->name('students.courseDetail')
-    ->middleware('role:student,leader', 'can:view,course');
+    ->middleware('role:student,leader');
 Route::get('group-detail-student/{group}', 'StudentController@showDetailGroup')->name('students.groupDetail')
-    ->middleware('permission:view-group', 'can:view,group');
+    ->middleware('permission:view-group');
 
 Route::get('course-list-lecturer', 'LecturerController@listCourse')->name('lecturers.courseList')
     ->middleware('permission:view-class');

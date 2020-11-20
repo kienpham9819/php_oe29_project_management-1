@@ -42,4 +42,20 @@ class GroupRepository extends BaseRepository implements GroupRepositoryInterface
 
         return false;
     }
+
+    public function getGroupHasProject($user)
+    {
+        $groups = $user->groups()
+            ->has('project')
+            ->pluck('groups.id');
+
+        return $groups;
+    }
+
+    public function getGroupForStudentInCourse($user, $courseId)
+    {
+        $group = $user->groups()->where('course_id', $courseId)->first();
+
+        return $group;
+    }
 }
