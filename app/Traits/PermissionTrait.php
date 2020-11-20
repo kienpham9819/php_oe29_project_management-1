@@ -2,29 +2,26 @@
 
 namespace App\Traits;
 
-use App\Models\Permission;
-use App\Models\Role;
+use App\Repositories\Permission\PermissionRepositoryInterface;
+use App\Repositories\User\UserRepositoryInterface;
+use App;
 
 trait PermissionTrait
 {
-    public function hasRole($roleName)
-    {
-        $role = Role::where('slug', $roleName)->first();
-        if ($role) {
-            return $this->roles->contains($role);
-        }
+    protected static $userRepository;
 
-        return false;
+    protected static function bootPermissionTrait()
+    {
+        static::$userRepository = App::make(UserRepositoryInterface::class);
     }
 
-    public function hasPermissionTo(Permission $permission)
+    public function hasRole($roleName)
     {
-        foreach ($permission->roles as $role) {
-            if ($this->roles->contains($role)) {
-                return true;
-            }
-        }
+        return static::$userRepository->checkRoleForUser($this, $roleName);
+    }
 
-        return false;
+    public function hasPermissionTo($permission)
+    {
+        return static::$userRepository->hasPermissionTo($this, $permission);
     }
 }

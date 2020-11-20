@@ -8,6 +8,7 @@ use App\Repositories\BaseRepository;
 use App\Repositories\User\UserRepositoryInterface;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\UsersImport;
+use Illuminate\Support\Facades\Hash;
 
 class UserRepository extends BaseRepository implements UserRepositoryInterface
 {
@@ -152,15 +153,34 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
         return true;
     }
 
-    public function getLeader($groupIds)
+    public function getLeader($groupId)
     {
-        $leader = User::whereIn('id', function ($query) use ($groupIds) {
+        $leader = User::whereIn('id', function ($query) use ($groupId) {
             $query->select('user_id')->from('group_user')->where('is_leader', config('admin.isLeader'))
-                ->where('group_id', $groupIds);
+                ->where('group_id', $groupId);
         })->first();
 
         if ($leader) {
             return $leader;
+        }
+
+        return false;
+    }
+
+    public function changePassword($user, $password)
+    {
+        return $user->update([
+            'password' => Hash::make($password),
+        ]);
+    }
+
+    public function hasPermissionTo($user, $permission)
+    {
+        $roles = $permission->roles;
+        foreach ($roles as $role) {
+            if ($user->roles->contains($role)) {
+                return true;
+            }
         }
 
         return false;

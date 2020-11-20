@@ -21,6 +21,8 @@ use App\Repositories\Group\GroupRepositoryInterface;
 use App\Repositories\Group\GroupRepository;
 use App\Repositories\Project\ProjectRepositoryInterface;
 use App\Repositories\Project\ProjectRepository;
+use App\Repositories\Permission\PermissionRepositoryInterface;
+use App\Repositories\Permission\PermissionRepository;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -66,6 +68,10 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(
             ProjectRepositoryInterface::class,
             ProjectRepository::class,
+        );
+        $this->app->singleton(
+            PermissionRepositoryInterface::class,
+            PermissionRepository::class,
         );
     }
 
