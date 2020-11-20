@@ -6,18 +6,16 @@ use App\Models\Course;
 use App\Models\Group;
 use App\Models\Project;
 use App\Http\Requests\ProjectRequest;
+use App\Repositories\Project\ProjectRepositoryInterface;
 
 class ProjectController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+    protected $projectRepository;
 
-    public function __construct()
+    public function __construct(ProjectRepositoryInterface $projectRepository)
     {
         $this->middleware('auth');
+        $this->projectRepository = $projectRepository;
     }
 
     public function create(Group $group)
@@ -34,9 +32,7 @@ class ProjectController extends Controller
         $groups = $user->groups()
             ->has('project')
             ->pluck('groups.id');
-        $projects = Project::whereIn('group_id', $groups)->orderBy('updated_at', 'desc')
-            ->with(['tasks', 'group.course'])
-            ->paginate(config('paginate.record_number'));
+        $projects = $this->projectRepository->projectsFromGroups($groups, config('paginate.record_number'));
 
         return view('projects.index', compact([
             'courses',
@@ -46,7 +42,7 @@ class ProjectController extends Controller
 
     public function store(ProjectRequest $request, Group $group)
     {
-        Project::create([
+        $this->projectRepository->create([
             'name' => $request->name,
             'description' => $request->description,
             'group_id' => $group->id,
@@ -61,11 +57,18 @@ class ProjectController extends Controller
      * @param  \App\Models\Project  $project
      * @return \Illuminate\Http\Response
      */
-    public function show(Project $project)
+    public function show($project)
     {
-        $project->load(['group.users', 'taskLists', 'tasks']);
-        $unfinished = $project->tasks()->where('is_completed', false)->count();
-        $completed = $project->tasks()->where('is_completed', true)->count();
+        $project = $this->projectRepository->find($project, ['group.users', 'taskLists', 'tasks']);
+        $this->authorize('view', $project);
+        $completed = $this->projectRepository->completedTask($project->id);
+        if ($completed === false) {
+            abort(404);
+        }
+        $unfinished = $this->projectRepository->unfinishedTask($project->id);
+        if ($unfinished === false) {
+            abort(404);
+        }
         $user = auth()->user();
         if ($user->hasRole('student')) {
             return view('projects.show', compact(['project', 'unfinished', 'completed']));
@@ -82,9 +85,10 @@ class ProjectController extends Controller
      * @param  \App\Models\Project  $project
      * @return \Illuminate\Http\Response
      */
-    public function edit(Project $project)
+    public function edit($project)
     {
-        $project->load(['group.users.roles', 'taskLists']);
+        $project = $this->projectRepository->find($project, ['group.users.roles', 'taskLists']);
+        $this->authorize('update', $project);
         if (auth()->user()->hasRole('student')) {
             return view('projects.edit', compact('project'));
         }
@@ -99,9 +103,11 @@ class ProjectController extends Controller
      * @param  \App\Models\Project  $project
      * @return \Illuminate\Http\Response
      */
-    public function update(ProjectRequest $request, Project $project)
+    public function update(ProjectRequest $request, $project)
     {
-        $project->update([
+        $project = $this->projectRepository->find($project);
+        $this->authorize('update', $project);
+        $this->projectRepository->update($project->id, [
             'name' => $request->name,
             'description' => $request->description,
         ]);
@@ -115,9 +121,11 @@ class ProjectController extends Controller
      * @param  \App\Models\Project  $project
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Project $project)
+    public function destroy($project)
     {
-        $project->delete();
+        $project = $this->projectRepository->find($project);
+        $this->authorize('delete', $project);
+        $this->projectRepository->delete($project->id);
         if (auth()->user()->hasRole('student')) {
             return redirect()->route('projects.index');
         }
@@ -125,10 +133,11 @@ class ProjectController extends Controller
         return redirect()->route('groups.show', $project->group->id);
     }
 
-    public function toggle(Project $project)
+    public function toggle($project)
     {
-        $project->is_accepted = !$project->is_accepted;
-        $project->save();
+        if (!$this->projectRepository->toggle($project)){
+            abort(404);
+        }
 
         return back();
     }

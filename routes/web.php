@@ -41,7 +41,7 @@ Route::resource('roles', 'RoleController')
 Route::get('projects', 'ProjectController@index')->name('projects.index')
     ->middleware('permission:view-project');
 Route::get('projects/{project}', 'ProjectController@show')->name('projects.show')
-    ->middleware('permission:view-project', 'can:view,project');
+    ->middleware('permission:view-project');
 
 Route::get('groups/{group}/projects/create', 'ProjectController@create')->name('groups.projects.create')
     ->middleware('permission:create-project', 'can:create,group');
@@ -49,27 +49,28 @@ Route::post('groups/{group}/projects', 'ProjectController@store')->name('groups.
     ->middleware('permission:create-project', 'can:create,group');
 
 Route::get('projects/{project}/edit', 'ProjectController@edit')->name('projects.edit')
-    ->middleware('permission:update-project', 'can:update,project');
+    ->middleware('permission:update-project');
 Route::patch('projects/{project}', 'ProjectController@update')->name('projects.update')
-    ->middleware('permission:update-project', 'can:update,project');
+    ->middleware('permission:update-project');
 Route::delete('projects/{project}', 'ProjectController@destroy')->name('projects.destroy')
-    ->middleware('permission:delete-project', 'can:delete,project');
-Route::patch('projects/{project}/toggle', 'ProjectController@toggle')->name('projects.toggle');
+    ->middleware('permission:delete-project');
+Route::patch('projects/{project}/toggle', 'ProjectController@toggle')->name('projects.toggle')
+    ->middleware('permission:accept-project');
 
 Route::get('projects/{project}/task-lists/', 'TaskListController@index')->name('projects.task-lists.index')
-    ->middleware('permission:view-project', 'can:view,project');
+    ->middleware('permission:view-project');
 Route::get('projects/{project}/task-lists/create', 'TaskListController@create')->name('projects.task-lists.create')
-    ->middleware('permission:create-tasklist', 'can:update,project');
+    ->middleware('permission:create-tasklist');
 Route::get('projects/{project}/task-lists/{taskList}', 'TaskListController@show')->name('projects.task-lists.show')
-    ->middleware('permission:view-project', 'can:view,project');
+    ->middleware('permission:view-project');
 Route::get('projects/{project}/task-lists/{taskList}/edit', 'TaskListController@edit')->name('projects.task-lists.edit')
-    ->middleware('permission:update-tasklist', 'can:update,project');
+    ->middleware('permission:update-tasklist');
 Route::post('projects/{project}/task-lists/', 'TaskListController@store')->name('projects.task-lists.store')
-    ->middleware('permission:create-tasklist', 'can:update,project');
+    ->middleware('permission:create-tasklist');
 Route::patch('projects/{project}/task-lists/{taskList}', 'TaskListController@update')->name('projects.task-lists.update')
-    ->middleware('permission:update-tasklist', 'can:update,project');
+    ->middleware('permission:update-tasklist');
 Route::delete('projects/{project}/task-lists/{taskList}', 'TaskListController@destroy')->name('projects.task-lists.destroy')
-    ->middleware('permission:delete-tasklist', 'can:delete,project');
+    ->middleware('permission:delete-tasklist');
 
 Route::get('task-lists/{taskList}/tasks/', 'TaskController@index')->name('task-lists.tasks.index')
     ->middleware('permission:view-project');

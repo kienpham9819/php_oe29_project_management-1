@@ -9,24 +9,27 @@ use DB;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use App\Repositories\TaskList\TaskListRepositoryInterface;
+use App\Repositories\Project\ProjectRepositoryInterface;
 
 class TaskListController extends Controller
 {
     protected $taskListRepository, $projectRepository;
 
-    public function __construct(TaskListRepositoryInterface $taskListRepository)
+    public function __construct(TaskListRepositoryInterface $taskListRepository, ProjectRepositoryInterface $projectRepository)
     {
         $this->middleware('auth');
         $this->taskListRepository = $taskListRepository;
+        $this->projectRepository = $projectRepository;
     }
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Project $project)
+    public function index($project)
     {
-        $project->load(['group.users', 'taskLists', 'tasks']);
+        $project = $this->projectRepository->find($project, ['group.users', 'taskLists', 'tasks']);
+        $this->authorize('view', $project);
         $unfinished = $project->tasks()->where('is_completed', false)->count();
         $completed = $project->tasks()->where('is_completed', true)->count();
         $taskLists = $project->taskLists->load(['tasks', 'comments']);
@@ -57,9 +60,10 @@ class TaskListController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create(Project $project)
+    public function create($project)
     {
-        $project->load('group.users');
+        $project = $this->projectRepository->find($project, ['group.users']);
+        $this->authorize('update', $project);
         if (auth()->user()->hasRole('student')) {
             return view('projects.lists.create', compact(['project']));
         }
@@ -73,9 +77,10 @@ class TaskListController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Project $project, TaskListRequest $request)
+    public function store($project, TaskListRequest $request)
     {
-        $project->load('group.users');
+        $project = $this->projectRepository->find($project, ['group.users']);
+        $this->authorize('update', $project);
         if (!$project->group->users->contains($request->user_id)) {
             abort(403);
         }
@@ -96,8 +101,10 @@ class TaskListController extends Controller
      * @param  \App\Models\TaskList  $taskList
      * @return \Illuminate\Http\Response
      */
-    public function show(Project $project, $taskList)
+    public function show($project, $taskList)
     {
+        $project = $this->projectRepository->find($project, ['tasks.comments', 'tasks.attachments']);
+        $this->authorize('view', $project);
         $taskList = $this->taskListRepository->find($taskList, ['tasks.comments', 'tasks.attachments']);
         $chart = $this->createActivityChart($taskList->id);
         $completed = $this->taskListRepository->completedTask($taskList->id);
@@ -142,8 +149,10 @@ class TaskListController extends Controller
      * @param  \App\Models\TaskList  $taskList
      * @return \Illuminate\Http\Response
      */
-    public function edit(Project $project, $taskList)
+    public function edit($project, $taskList)
     {
+        $project = $this->projectRepository->find($project, ['tasks.comments', 'tasks.attachments']);
+        $this->authorize('update', $project);
         $taskList = $this->taskListRepository->find($taskList, ['tasks.comments', 'tasks.attachments']);
         $completed = $this->taskListRepository->completedTask($taskList->id);
         if ($completed === false) {
@@ -178,20 +187,23 @@ class TaskListController extends Controller
      * @param  \App\Models\TaskList  $taskList
      * @return \Illuminate\Http\Response
      */
-    public function update(TaskListRequest $request, Project $project, TaskList $taskList)
+    public function update(TaskListRequest $request, $project, $taskList)
     {
-        $project->load(['group.users']);
+        $project = $this->projectRepository->find($project, ['group.users']);
+        $this->authorize('update', $project);
         if (!$project->group->users->contains($request->user_id)) {
             abort(403);
         }
-        $taskList->name = $request->name;
-        $taskList->description = $request->description;
-        $taskList->due_date = $request->due_date;
-        $taskList->start_date = $request->start_date;
-        $taskList->user_id = $request->user_id;
-        $taskList->save();
 
-        return redirect()->route('projects.task-lists.show', [$project->id, $taskList->id]);
+        $this->taskListRepository->update($taskList, [
+            'name' => $request->name,
+            'description' => $request->description,
+            'due_date' => $request->due_date,
+            'start_date' => $request->start_date,
+            'user_id' => $request->user_id,
+        ]);
+
+        return redirect()->route('projects.task-lists.show', [$project->id, $taskList]);
     }
 
     /**
@@ -200,8 +212,10 @@ class TaskListController extends Controller
      * @param  \App\Models\TaskList  $taskList
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Project $project, $taskList)
+    public function destroy($project, $taskList)
     {
+        $project = $this->projectRepository->find($project, ['group.users']);
+        $this->authorize('delete', $project);
         $this->taskListRepository->delete($taskList);
 
         return redirect()->route('projects.task-lists.index', [$project->id]);
