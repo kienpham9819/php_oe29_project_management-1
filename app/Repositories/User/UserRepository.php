@@ -101,6 +101,19 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
         return true;
     }
 
+    public function storeGithubToken($id, $token)
+    {
+        $user = $this->find($id);
+        if ($user) {
+            $user->github_token = $token;
+            $user->save();
+
+            return true;
+        }
+
+        return false;
+    }
+
     public function getUsersNotInCourse($userIds)
     {
         $users = User::whereNotIn('id', $userIds)
@@ -181,6 +194,31 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
             if ($user->roles->contains($role)) {
                 return true;
             }
+        }
+
+        return false;
+    }
+
+    public function getGithubRepositories($id, $userAgent)
+    {
+        $user = $this->find($id);
+        if ($user) {
+            if ($user->github_token) {
+                $curl_token = 'Authorization: token ' . $user->github_token;
+                $curl_handle = curl_init(config('github.curl_repo_url'));
+                curl_setopt($curl_handle, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($curl_handle, CURLOPT_HTTPHEADER, [
+                    'User-Agent:' . $userAgent,
+                    $curl_token,
+                ]);
+                $repositories = curl_exec($curl_handle);
+                curl_close($curl_handle);
+                $repositories = json_decode($repositories);
+
+                return $repositories;
+            }
+
+            return [];
         }
 
         return false;
