@@ -15,6 +15,8 @@ class Project extends Model
         'group_id',
         'review',
         'grade',
+        'is_completed',
+        'git_repository',
     ];
 
     public function group()
