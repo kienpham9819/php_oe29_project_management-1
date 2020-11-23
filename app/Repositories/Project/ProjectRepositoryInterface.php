@@ -15,4 +15,6 @@ interface ProjectRepositoryInterface extends RepositoryInterface
     public function projectsFromGroups($groups = [], $paginate = 0);
 
     public function getLastestProject($groups);
+
+    public function getMember($projectId);
 }
