@@ -5,17 +5,23 @@ namespace App\Http\Controllers;
 use App\Models\Course;
 use App\Models\Group;
 use App\Models\Project;
+use App\Mail\ProjectSubmit;
 use App\Http\Requests\ProjectRequest;
+use App\Repositories\User\UserRepositoryInterface;
+use Illuminate\Http\Request;
+use App\Http\Requests\ProjectLinkRequest;
 use App\Repositories\Project\ProjectRepositoryInterface;
+use Mail;
 
 class ProjectController extends Controller
 {
-    protected $projectRepository;
+    protected $projectRepository, $userRepository;
 
-    public function __construct(ProjectRepositoryInterface $projectRepository)
+    public function __construct(ProjectRepositoryInterface $projectRepository, UserRepositoryInterface $userRepository)
     {
         $this->middleware('auth');
         $this->projectRepository = $projectRepository;
+        $this->userRepository = $userRepository;
     }
 
     public function create(Group $group)
@@ -57,7 +63,7 @@ class ProjectController extends Controller
      * @param  \App\Models\Project  $project
      * @return \Illuminate\Http\Response
      */
-    public function show($project)
+    public function show($project, Request $request)
     {
         $project = $this->projectRepository->find($project, ['group.users', 'taskLists', 'tasks']);
         $this->authorize('view', $project);
@@ -71,7 +77,13 @@ class ProjectController extends Controller
         }
         $user = auth()->user();
         if ($user->hasRole('student')) {
-            return view('projects.show', compact(['project', 'unfinished', 'completed']));
+            $repositories = $this->userRepository
+                ->getGithubRepositories(
+                    auth()->user()->id,
+                    $request->header('User-Agent')
+                );
+
+            return view('projects.show', compact(['project', 'unfinished', 'completed', 'repositories']));
         } elseif ($user->hasRole('admin')) {
             return view('users.admin.project_detail', compact(['project', 'unfinished', 'completed']));
         }
@@ -115,6 +127,18 @@ class ProjectController extends Controller
         return redirect()->route('projects.show', [$project->id]);
     }
 
+
+    public function linkGithubRepository(ProjectLinkRequest $request, $project)
+    {
+        $project = $this->projectRepository->find($project);
+        $this->authorize('update', $project);
+        $result = $this->projectRepository->update($project->id, [
+            'git_repository' => $request->git_repository,
+        ]);
+
+        return redirect()->route('projects.show', [$project->id]);
+    }
+
     /**
      * Remove the specified resource from storage.
      *
@@ -140,5 +164,22 @@ class ProjectController extends Controller
         }
 
         return back();
+    }
+
+    public function submit($project)
+    {
+        $project = $this->projectRepository->update($project, [
+            'is_completed' => true,
+        ]);
+        if ($project) {
+            $project->load('group.course.user');
+            $lecturer = $project->group->course->user;
+            $mail = new ProjectSubmit($project, $lecturer);
+            Mail::to($lecturer)->send($mail);
+
+            return back();
+        } else {
+            abort(404);
+        }
     }
 }

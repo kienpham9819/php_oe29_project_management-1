@@ -52,10 +52,14 @@ Route::get('projects/{project}/edit', 'ProjectController@edit')->name('projects.
     ->middleware('permission:update-project');
 Route::patch('projects/{project}', 'ProjectController@update')->name('projects.update')
     ->middleware('permission:update-project');
+Route::patch('projects/{project}/link', 'ProjectController@linkGithubRepository')->name('projects.link')
+    ->middleware('permission:update-project');
 Route::delete('projects/{project}', 'ProjectController@destroy')->name('projects.destroy')
     ->middleware('permission:delete-project');
 Route::patch('projects/{project}/toggle', 'ProjectController@toggle')->name('projects.toggle')
     ->middleware('permission:accept-project');
+Route::patch('projects/{project}/submit', 'ProjectController@submit')->name('projects.submit')
+    ->middleware('permission:update-project');
 
 Route::get('projects/{project}/task-lists/', 'TaskListController@index')->name('projects.task-lists.index')
     ->middleware('permission:view-project');

@@ -175,8 +175,72 @@
                                 </td>
                             </tr>
                         @endif
+                        @if (auth()->user()->can('update-project') && auth()->user()->can('update', $project))
+                            <tr>
+                                <td>
+                                    <a class="h5 text-uppercase text-dark"
+                                        data-toggle="collapse"
+                                        href="#gitRepo"
+                                        role="button"
+                                        aria-expanded="false"
+                                        aria-controls="gitRepo">
+                                        <i class="fab fa-github-alt"></i>
+                                        {{ trans('project.link_github') }}
+                                    </a>
+                                </td>
+                            </tr>
+                        @endif
                     </tbody>
                 </table>
+                @if ($project->git_repository)
+                    <input class="form-control w-100"
+                        type="text"
+                        value="{{ $project->git_repository }}"
+                        readonly>
+                @endif
+
+                @if (auth()->user()->can('update-project') && auth()->user()->can('update', $project))
+                    <div class="collapse" id="gitRepo">
+                        <div class="card">
+                            <ul class="list-group list-group-flush">
+                                @foreach ($repositories as $repo)
+                                    <li class="list-group-item">
+                                        <div class="row">
+                                            <div class="col-6">
+                                                @if ($repo->private)
+                                                    <i class="text-secondary mr-2 fas fa-lock"></i>
+                                                @elseif ($repo->fork)
+                                                    <i class="text-secondary mr-2 fas fa-code-branch"></i>
+                                                @else
+                                                    <i class="text-secondary mr-2 fas fa-book"></i>
+                                                @endif
+                                                <a href="{{ $repo->html_url }}">
+                                                    {{ $repo->name }}
+                                                </a>
+                                            </div>
+                                            <div class="col-6">
+                                                @if ($repo->html_url != $project->git_repository)
+                                                    <form method="post" action="{{ route('projects.link', $project->id) }}">
+                                                        @csrf
+                                                        @method('patch')
+                                                            <input type="hidden" name="git_repository" value="{{ $repo->html_url }}">
+                                                            <button class="btn btn-sm btn-secondary" type="submit">
+                                                                <i class="fas fa-link"></i>
+                                                            </button>
+                                                    </form>
+                                                @else
+                                                    <button class="btn btn-sm btn-success" type="submit">
+                                                        <i class="fas fa-link"></i>
+                                                    </button>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    </div>
+                @endif
                 <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteLabel" aria-hidden="true">
                     <div class="modal-dialog" role="document">
                         <div class="modal-content">
@@ -204,6 +268,74 @@
                     </div>
                 </div>
             </div>
+        </div>
+        <div id="submit">
+            @if ($project->is_completed)
+                <div class="text-center text-uppercase border p-3 bg-white">
+                    <span class="font-weight-bold text-success">
+                        <i class="fas fa-check"></i>
+                        {{ trans('project.completed') }}
+                        <i class="fas fa-check"></i>
+                    </span>
+                    @if ($project->grade)
+                        <table class="table text-left mt-3">
+                            <tr>
+                                <th class="w-25">
+                                    {{ trans('project.grade') }} :
+                                </th>
+                                <td>
+                                    {{ $project->grade }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="w-25">
+                                    {{ trans('project.review') }} :
+                                </th>
+                                <td>
+                                    <p>
+                                        {{ $project->review }}
+                                    </p>
+                                </td>
+                            </tr>
+                        </table>
+                    @endif
+                </div>
+            @else
+                <a class="btn btn-primary w-100 text-uppercase"
+                    data-toggle="modal"
+                    href="#submit-project"
+                    role="button"
+                    aria-expanded="false"
+                    aria-controls="submit-project">
+                    {{ trans('project.submit') }}
+                </a>
+                <div class="modal fade" id="submit-project" tabindex="-1" role="dialog" aria-labelledby="submitLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title text-capitalize" id="submitLabel">
+                                    {{ trans('general.confirm') }}
+                                </h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-footer">
+                                <form method="post" action="{{ route('projects.submit', $project->id) }}">
+                                    @csrf
+                                    @method('patch')
+                                    <button class="btn btn-primary w-100 text-uppercase">
+                                        {{ trans('project.submit') }}
+                                    </button>
+                                </form>
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                                    {{ trans('general.close') }}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endif
         </div>
     </div>
 @endsection
