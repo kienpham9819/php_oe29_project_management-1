@@ -13,6 +13,8 @@ use App\Http\Requests\ProjectLinkRequest;
 use App\Repositories\Project\ProjectRepositoryInterface;
 use Mail;
 use App\Http\Requests\GradeRequest;
+use Exception;
+use App\Mail\NotiGrade;
 
 class ProjectController extends Controller
 {
@@ -182,14 +184,23 @@ class ProjectController extends Controller
         } else {
             abort(404);
         }
+    }
 
-    public function grade(GradeRequest $request, $project)
+    public function grade(GradeRequest $request, $projectId)
     {
-        if ($this->projectRepository->update($project, [
+        $data = [
             'grade' => $request->grade,
             'review' => $request->review,
-        ])) {
-            return redirect()->route('projects.show', [$project]);
+        ];
+        $users = $this->projectRepository->getMember($projectId);
+        if ($this->projectRepository->update($projectId, $data)) {
+            try {
+                Mail::bcc($users)->send(new NotiGrade($data));
+
+                return redirect()->route('projects.show', [$projectId]);
+            } catch (Exception $e) {
+                return $e->getMessage();
+            }
         }
 
         abort(404);
