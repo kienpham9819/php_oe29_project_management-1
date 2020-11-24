@@ -32,6 +32,8 @@ class ProjectTest extends TestCase
             'group_id',
             'review',
             'grade',
+            'is_completed',
+            'git_repository',
         ], $this->model->getFillable());
     }
 

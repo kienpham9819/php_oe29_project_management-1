@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests\ProjectLinkRequest;
 use App\Repositories\Project\ProjectRepositoryInterface;
 use Mail;
+use App\Http\Requests\GradeRequest;
 
 class ProjectController extends Controller
 {
@@ -181,5 +182,16 @@ class ProjectController extends Controller
         } else {
             abort(404);
         }
+
+    public function grade(GradeRequest $request, $project)
+    {
+        if ($this->projectRepository->update($project, [
+            'grade' => $request->grade,
+            'review' => $request->review,
+        ])) {
+            return redirect()->route('projects.show', [$project]);
+        }
+
+        abort(404);
     }
 }
