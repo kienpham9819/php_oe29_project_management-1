@@ -132,3 +132,6 @@ Route::get('group-detail/{group}', 'LecturerController@groupDetail')->name('lect
 
 Route::get('/auth/{driver}', 'SocialLoginController@redirectToProvider')->name('social.auth');
 Route::get('/auth/callback/{driver}', 'SocialLoginController@handleProviderCallback')->name('social.callback');
+
+Route::patch('update-grade/{project}', 'GradeController@grade')->name('updateGrade')
+    ->middleware('permission:accept-project');

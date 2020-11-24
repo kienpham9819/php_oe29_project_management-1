@@ -6,6 +6,7 @@ return [
     'completed' => 'Dự án đã hoàn thành',
     'edit' => 'Sửa dự án',
     'grade' => 'Điểm số',
+    'grade_project' => 'Chấm điểm cho bài tập',
     'link_github' => 'Liên kết Github Repository',
     'list' => 'Danh sách dự án',
     'management' => 'Quản lý dự án',
@@ -14,6 +15,8 @@ return [
     'project' => 'Dự án',
     'recent' => 'Dự án gần đây',
     'review' => 'Nhận xét của giảng viên',
+    'review_project' => 'Viết nhận xét cho bài tập',
     'submit' => 'Nộp dự án',
-    'view_members' => 'xem thành viên',
+    'update_grade' => 'Cập nhật điểm',
+    'view_members' => 'em thành viên',
 ];

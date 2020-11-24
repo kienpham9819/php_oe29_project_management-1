@@ -160,5 +160,28 @@
                 </table>
             </div>
         </div>
+        @if ($project->is_completed)
+            <div class="text-center text-uppercase border p-3 bg-white">
+                <span class="font-weight-bold text-success">
+                    <i class="fas fa-check"></i>
+                    {{ trans('project.completed') }}
+                    <i class="fas fa-check"></i>
+                </span>
+                <form action="{{ route('updateGrade', $project->id) }}" method="post" class="mt-3 text-left font-weight-bold">
+                    @csrf
+                    @method('patch')
+                    <div class="form-group">
+                        <label for="grade">{{ trans('project.grade') }}</label>
+                        <input type="number" min="0" max="10" class="form-control" name="grade" id="grade" placeholder="{{ trans('project.grade_project') }}"
+                            value="{{ old('grade', $project->grade) }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="review">{{ trans('project.review') }}</label>
+                        <textarea name="review" class="form-control" id="review" cols="30" rows="10" placeholder="{{ trans('project.review_project') }}">{{ old('review', $project->review) }}</textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">{{ trans('project.update_grade') }}</button>
+                </form>
+            </div>
+        @endif
     </div>
 @endsection
