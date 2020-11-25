@@ -107,4 +107,5 @@ return [
         ],
     ],
 
+    'warning_days' => 3,
 ];
