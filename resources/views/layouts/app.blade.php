@@ -24,7 +24,6 @@
                 <a class="navbar-brand text-white font-weight-bold text-uppercase" href="#">
                     {{ config('app.name') }}
                 </a>
-
                 <ul class="navbar-nav ml-auto">
                     <li class="nav-item dropdown mr-5">
                         <a id="managingDropdown" class="nav-link dropdown-toggle text-white lang" href= "#" role="button"
@@ -70,6 +69,22 @@
                                         {{ trans('general.logout') }}
                                     </button>
                                 </form>
+                            </div>
+                        </li>
+                        <li class="nav-item dropdown dropdown-notifications">
+                            <a id="navbarDropdown" class="nav-link dropdown-toggle text-light" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
+                                <i class="far fa-bell text-light"></i>
+                                <span id="qt" class="text-danger"> {{ Auth::user()->unreadNotifications->count() }} </span>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right menu-notification" aria-labelledby="navbarDropdown">
+                                <input id="userId" type="hidden" name="idUser" value="{{ auth()->user()->id }}">
+                                @forelse (Auth::user()->unreadNotifications as $notification)
+                                    <a class="dropdown-item p-2 d-block" href="#">
+                                        <span>{{ $notification->data['tasklistName'] }}</span><br>
+                                    </a>
+                                @empty
+                                    <span id="none-content" class="p-2 d-block w-auto">{{ 'khong co thong bao nao' }}</span>
+                                @endforelse
                             </div>
                         </li>
                     @endguest

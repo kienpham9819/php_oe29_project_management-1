@@ -5,13 +5,14 @@ namespace App\Notifications;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Notifications\Messages\BroadcastMessage;
 use Illuminate\Notifications\Notification;
 
 class Warning extends Notification implements ShouldQueue
 {
     use Queueable;
 
-    protected $data;
+    public $data;
 
     /**
      * Create a new notification instance.
@@ -31,7 +32,7 @@ class Warning extends Notification implements ShouldQueue
      */
     public function via($notifiable)
     {
-        return ['database'];
+        return ['database', 'broadcast'];
     }
 
     /**
@@ -44,4 +45,9 @@ class Warning extends Notification implements ShouldQueue
     {
         return $this->data;
     }
+
+    // public function toBroadcast($notifiable)
+    // {
+    //     return new BroadcastMessage($this->data);
+    // }
 }

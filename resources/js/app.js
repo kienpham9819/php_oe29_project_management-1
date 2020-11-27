@@ -48,4 +48,43 @@ $(document).ready(function () {
         });
     });
     $('.noti').delay(2000).slideUp();
+
+    // var pusher = new Pusher(process.env.MIX_PUSHER_APP_KEY, {
+    //     encrypted: true,
+    //     cluster: process.env.MIX_PUSHER_APP_CLUSTER
+    // });
+    // var channel = pusher.subscribe('NotificationEvent');
+
+    // channel.bind('warning-message', function(data) {
+    //     var user_id = $('#userId').val();
+    //     var newNotificationHtml = "";
+    //     if (user_id == data.user_id) {
+    //         var newNotificationHtml = `<a class="dropdown-item p-2 d-block" href="#">
+    //         <span>${data.tasklistName}</span><br></a>`;
+    //         $('.menu-notification').prepend(newNotificationHtml);
+    //         $('#none-content').remove();
+    //     }
+    // });
+
+    // Echo.channel('warning-message')
+    //     .listen('NotificationEvent', (e) => {
+    //         alert(e.data.tasklistName);
+    //     });
+
+
+    Echo.private('warning-message')
+        .listen('NotificationEvent', (e) => {
+            var user_id = $('#userId').val();
+            var qt = parseInt($('#qt').text());
+            if (user_id == e.data.user_id) {
+                qt+=1;
+                var newNotificationHtml = `<a class="dropdown-item p-2 d-block" href="#">
+                <span>${e.data.tasklistName}</span><br></a>`;
+                $('#none-content').remove();
+                $('.menu-notification').prepend(newNotificationHtml);
+                $('#qt').text(qt);
+            }
+       });
+
+
 });
