@@ -5,3 +5,18 @@
 .date-frame {
     width: 14%;
 }
+
+.pointer {
+	cursor: pointer;
+}
+
+.fixed {
+    position: fixed;
+    bottom: 1rem;
+    right: 1rem;
+    max-width: 300px;
+}
+
+.notification-box {
+    max-height: 300px;
+}

@@ -16,6 +16,9 @@ use Exception;
 use App\Mail\NotiGrade;
 use App\Jobs\SendWarning;
 use App\Jobs\FinishProject;
+use App\Notifications\ProjectApproved;
+use App\Events\NotifyEvent;
+use Pusher\Pusher;
 
 class ProjectController extends Controller
 {
@@ -163,8 +166,19 @@ class ProjectController extends Controller
 
     public function toggle($project)
     {
-        if (!$this->projectRepository->toggle($project)){
+        if (!$this->projectRepository->toggle($project)) {
             abort(404);
+        }
+        $project = $this->projectRepository->find($project, ['group.users']);
+        if ($project->is_accepted) {
+            foreach ($project->group->users as $user) {
+                $notification = new ProjectApproved($project->name, route('projects.show', [$project->id]));
+                $user->notify($notification);
+                broadcast(new NotifyEvent([
+                    'channel' => $user->id,
+                    'notifications' => $this->userRepository->getNotifications($user->id),
+                ]))->toOthers();
+            }
         }
 
         return back();

@@ -8,6 +8,7 @@ use App\Repositories\User\UserRepositoryInterface;
 use App\Repositories\Project\ProjectRepositoryInterface;
 use Carbon\Carbon;
 use App\Notifications\Warning;
+use App\Events\NotifyEvent;
 
 class WarningDeadline extends Command
 {
@@ -54,7 +55,6 @@ class WarningDeadline extends Command
         $tasklists = $this->taskListRepository->getAll();
         $now = Carbon::now();
 
-
         foreach ($tasklists as $tasklist) {
             $deadline = $tasklist->due_date->subDay(config('mail.warning_days'));
             $user = $this->userRepository->find($tasklist->user_id);
@@ -63,11 +63,19 @@ class WarningDeadline extends Command
             if ($deadline <= $now && $now <= $tasklist->due_date) {
                 $data = [
                     'tasklistName' => $tasklist->name,
-                    'url' => $tasklist->id,
+                    'url' => route('projects.task-lists.show', [$project->id, $tasklist->id]),
                     'projectName' => $project->name,
                 ];
                 $user->notify(new Warning($data));
+                broadcast(new NotifyEvent([
+                    'channel' => $user->id,
+                    'notifications' => $this->userRepository->getNotifications( $user->id),
+                ]));
+
+                return true;
             }
+
+            return false;
         }
     }
 }
