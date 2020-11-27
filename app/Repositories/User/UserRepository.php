@@ -223,4 +223,37 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
 
         return false;
     }
+
+    public function getNotifications($id)
+    {
+        $user = $this->find($id);
+        if ($user) {
+            $notifications = [];
+            foreach ($user->unreadNotifications->sortBy('created_at') as $notification) {
+                $message = trans(config('notification.' . $notification->type), $notification->data);
+                $notifications[] = (object) [
+                    'message' => $message,
+                    'url' => $notification->data['url'],
+                    'id' => $notification->id,
+                    'created_at' => $notification->created_at,
+                ];
+            }
+
+            return $notifications;
+        } else {
+            return [];
+        }
+    }
+
+    public function markAsRead($user, $notificationId)
+    {
+        $user = $this->find($user);
+        if ($user) {
+            $user->notifications()->where('id', $notificationId)->update(['read_at' => now()]);
+
+            return true;
+        }
+
+        return false;
+    }
 }
