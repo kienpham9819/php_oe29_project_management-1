@@ -11,10 +11,11 @@ use App\Repositories\User\UserRepositoryInterface;
 use Illuminate\Http\Request;
 use App\Http\Requests\ProjectLinkRequest;
 use App\Repositories\Project\ProjectRepositoryInterface;
-use Mail;
 use App\Http\Requests\GradeRequest;
 use Exception;
 use App\Mail\NotiGrade;
+use App\Jobs\SendWarning;
+use App\Jobs\FinishProject;
 
 class ProjectController extends Controller
 {
@@ -177,13 +178,17 @@ class ProjectController extends Controller
         if ($project) {
             $project->load('group.course.user');
             $lecturer = $project->group->course->user;
-            $mail = new ProjectSubmit($project, $lecturer);
-            Mail::to($lecturer)->send($mail);
+            try {
+                $emailJob = new FinishProject($project, $lecturer);
+                dispatch($emailJob);
 
-            return back();
-        } else {
-            abort(404);
+                return back();
+            } catch (Exception $e) {
+                return $e->getMessage();
+            }
         }
+
+        abort(404);
     }
 
     public function grade(GradeRequest $request, $projectId)
@@ -195,7 +200,8 @@ class ProjectController extends Controller
         $users = $this->projectRepository->getMember($projectId);
         if ($this->projectRepository->update($projectId, $data)) {
             try {
-                Mail::bcc($users)->send(new NotiGrade($data));
+                $emailJob = new SendWarning($data, $users);
+                dispatch($emailJob);
 
                 return redirect()->route('projects.show', [$projectId]);
             } catch (Exception $e) {
