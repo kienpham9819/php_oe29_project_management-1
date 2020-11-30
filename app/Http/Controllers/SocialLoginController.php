@@ -26,13 +26,13 @@ class SocialLoginController extends Controller
 
     public function redirectToProvider($driver)
     {
-        if (config()->has('services.' . $driver)) {
-            return Socialite::driver($driver)
-                ->scopes(['read:user', 'repo'])
-                ->redirect();
-        } else {
+        if (!config()->has('services.' . $driver)) {
             abort(404);
         }
+
+        return Socialite::driver($driver)
+            ->scopes(['read:user', 'repo'])
+            ->redirect();
     }
 
     /**
@@ -43,10 +43,10 @@ class SocialLoginController extends Controller
 
     public function handleProviderCallback($driver)
     {
-        try {
+        if (config()->has('services.' . $driver)) {
             $user = Socialite::driver($driver)->user();
-        } catch (Exception $e) {
-            abort(403);
+        } else {
+            abort(404);
         }
 
         // store user's github token
