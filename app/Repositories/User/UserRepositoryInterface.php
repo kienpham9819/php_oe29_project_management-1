@@ -43,4 +43,8 @@ interface UserRepositoryInterface
     public function storeGithubToken($id, $token);
 
     public function getGithubRepositories($id, $userAgent);
+
+    public function getNotifications($id);
+
+    public function markAsRead($user, $notificationId);
 }
