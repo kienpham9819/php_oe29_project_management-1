@@ -180,6 +180,7 @@ class GroupController extends Controller
     public function destroy($id)
     {
         $group = $this->groupRepository->find($id);
+        $this->authorize('delete', $group);
         $this->groupRepository->delete($id);
 
         if ($this->userRepository->hasRole('admin')) {
