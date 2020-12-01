@@ -70,11 +70,11 @@ class ProjectRepository extends BaseRepository implements ProjectRepositoryInter
         return $projects;
     }
 
-     public function getMember($projectId)
-     {
+    public function getMember($projectId)
+    {
         $project = $this->find($projectId);
         $users = $project->group->users;
 
         return $users;
-     }
+    }
 }

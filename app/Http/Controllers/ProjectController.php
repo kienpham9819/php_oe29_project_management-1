@@ -184,25 +184,19 @@ class ProjectController extends Controller
         return back();
     }
 
-    public function submit($project)
+    public function submit($projectId)
     {
-        $project = $this->projectRepository->update($project, [
+        $project = $this->projectRepository->update($projectId, [
             'is_completed' => true,
         ]);
-        if ($project) {
-            $project->load('group.course.user');
-            $lecturer = $project->group->course->user;
-            try {
-                $emailJob = new FinishProject($project, $lecturer);
-                dispatch($emailJob);
-
-                return back();
-            } catch (Exception $e) {
-                return $e->getMessage();
-            }
+        if (!$project) {
+            abort(404);
         }
+        $lecturer = $this->userRepository->getLecturer($project);
+        $emailJob = new FinishProject($project, $lecturer);
+        dispatch($emailJob);
 
-        abort(404);
+        return redirect()->route('projects.show', [$projectId]);
     }
 
     public function grade(GradeRequest $request, $projectId)
@@ -211,18 +205,14 @@ class ProjectController extends Controller
             'grade' => $request->grade,
             'review' => $request->review,
         ];
-        $users = $this->projectRepository->getMember($projectId);
-        if ($this->projectRepository->update($projectId, $data)) {
-            try {
-                $emailJob = new SendWarning($data, $users);
-                dispatch($emailJob);
-
-                return redirect()->route('projects.show', [$projectId]);
-            } catch (Exception $e) {
-                return $e->getMessage();
-            }
+        $project = $this->projectRepository->update($projectId, $data);
+        if (!$project) {
+            abort(404);
         }
+        $users = $this->projectRepository->getMember($projectId);
+        $emailJob = new SendWarning($data, $users);
+        dispatch($emailJob);
 
-        abort(404);
+        return redirect()->route('projects.show', [$projectId]);
     }
 }

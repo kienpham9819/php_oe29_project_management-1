@@ -256,4 +256,12 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
 
         return false;
     }
+
+    public function getLecturer($project)
+    {
+        $project->load('group.course.user');
+        $lecturer = $project->group->course->user;
+
+        return $lecturer;
+    }
 }
