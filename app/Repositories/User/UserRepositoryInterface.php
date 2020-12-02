@@ -47,4 +47,6 @@ interface UserRepositoryInterface
     public function getNotifications($id);
 
     public function markAsRead($user, $notificationId);
+
+    public function getLecturer($project);
 }
