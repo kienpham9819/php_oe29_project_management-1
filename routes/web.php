@@ -104,7 +104,7 @@ Route::get('edit-group/{group}/edit', 'GroupController@edit')->name('groups.edit
 Route::patch('update-group/{group}', 'GroupController@update')->name('groups.update')
     ->middleware('permission:update-group', 'can:update,group');
 Route::delete('destroy-group/{group}', 'GroupController@destroy')->name('groups.destroy')
-    ->middleware('permission:delete-group', 'can:delete,group');
+    ->middleware('permission:delete-group');
 Route::post('add-user-to-group/{group}', 'GroupController@addUserToGroup')->name('groups.addUser')
     ->middleware('role:admin,lecturer');
 Route::delete('delete-user-of-group/{group}/{user}', 'GroupController@deleteUserFromGroup')->name('groups.deleteUser')
