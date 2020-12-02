@@ -82,8 +82,7 @@ class ProjectController extends Controller
         if ($unfinished === false) {
             abort(404);
         }
-        $user = auth()->user();
-        if ($user->hasRole('student')) {
+        if ($this->userRepository->hasRole('student')) {
             $repositories = $this->userRepository
                 ->getGithubRepositories(
                     auth()->user()->id,
@@ -91,7 +90,7 @@ class ProjectController extends Controller
                 );
 
             return view('projects.show', compact(['project', 'unfinished', 'completed', 'repositories']));
-        } elseif ($user->hasRole('admin')) {
+        } elseif ($this->userRepository->hasRole('admin')) {
             return view('users.admin.project_detail', compact(['project', 'unfinished', 'completed']));
         }
 
