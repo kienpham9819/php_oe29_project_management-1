@@ -74,8 +74,8 @@ class WarningDeadline extends Command
 
                 return true;
             }
-
-            return false;
         }
+
+        return false;
     }
 }
