@@ -34,6 +34,6 @@ class FinishProject implements ShouldQueue
      */
     public function handle()
     {
-         Mail::to($this->lecturer)->send(new ProjectSubmit($this->project, $this->lecturer));
+        Mail::to($this->lecturer)->send(new ProjectSubmit($this->project, $this->lecturer));
     }
 }
