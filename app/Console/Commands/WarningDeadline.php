@@ -71,11 +71,7 @@ class WarningDeadline extends Command
                     'channel' => $user->id,
                     'notifications' => $this->userRepository->getNotifications( $user->id),
                 ]));
-
-                return true;
             }
         }
-
-        return false;
     }
 }

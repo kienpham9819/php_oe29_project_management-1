@@ -37,7 +37,7 @@ class SendWarningTest extends TestCase
     {
         Mail::fake();
         $this->sendWarning->handle();
-        Mail::assertQueued(NotiGrade::class, function ($mail) {
+        Mail::assertSent(NotiGrade::class, function ($mail) {
             return $mail->hasBcc($this->users);
         });
     }

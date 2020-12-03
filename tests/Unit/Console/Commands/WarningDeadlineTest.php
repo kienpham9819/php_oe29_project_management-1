@@ -63,30 +63,11 @@ class WarningDeadlineTest extends TestCase
         $notifications = array();
         $this->userMock->shouldReceive('getNotifications')->andReturn($notifications);
         Event::fake();
-        $result = $this->warningDeadline->handle();
-        $this->assertTrue($result);
+        $this->warningDeadline->handle();
         Notification::assertSentTo(
             $user,
             Warning::class
         );
         Event::assertDispatched(NotifyEvent::class);
-    }
-
-    public function test_handle_when_deadline_is_not_reached()
-    {
-        $tasklists = factory(TaskList::class, 1)->make();
-        $tasklists[0]->id = 10;
-        $now = Carbon::now();
-        $tasklists[0]->due_date = $now->subDay(config('mail.warning_days'));
-        $this->taskListMock->shouldReceive('getAll')->once()->andReturn($tasklists);
-        $deadline = $now->addDays(2);
-        $user = factory(User::class)->make();
-        $this->userMock->shouldReceive('find')->andReturn($user);
-        $project = factory(Project::class)->make();
-        $this->projectMock->shouldReceive('find')->andReturn($project);
-        $leader = factory(User::class)->make();
-        $this->userMock->shouldReceive('getLeader')->andReturn($leader);
-        $result = $this->warningDeadline->handle();
-        $this->assertFalse($result);
     }
 }
