@@ -45,4 +45,7 @@
         </table>
         {{ $courses->links() }}
     </div>
+    <input type="number" id="k">
+    <div id="view_data">a</div>
+    <canvas id="line-chart"></canvas>
 @endsection

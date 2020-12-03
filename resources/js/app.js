@@ -48,4 +48,49 @@ $(document).ready(function () {
         });
     });
     $('.noti').delay(2000).slideUp();
+
+    $("#k").change(function () {
+        var k = $(this).val();
+        $.get("showChart/"+k, function (data) {
+            $("#view_data").text(data);
+            var data = $.parseJSON(data);
+            var labels = [];
+            var result = [];
+            for (var i in data) {
+                labels.push(data[i].task_list_id);
+                result.push(data[i].total);
+            }
+
+
+            Chart.defaults.global.defaultFontColor = '#000000';
+            Chart.defaults.global.defaultFontFamily = 'Arial';
+            Chart.defaults.global.defaultFontSize = 15;
+            var lineChart = $('#line-chart');
+            var myChart = new Chart(lineChart, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Completed task',
+                            data: result,
+                            backgroundColor: 'rgba(0, 128, 128, 0.3)',
+                            borderColor: 'rgba(0, 128, 128, 0.7)',
+                            borderWidth: 1
+                        },
+
+                    ]
+                },
+                options: {
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero:true
+                            }
+                        }]
+                    },
+                }
+            });
+        });
+    });
 });

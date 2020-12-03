@@ -135,3 +135,8 @@ Route::get('/auth/callback/{driver}', 'SocialLoginController@handleProviderCallb
 
 Route::patch('update-grade/{project}', 'ProjectController@grade')->name('updateGrade')
     ->middleware('role:lecturer', 'permission:accept-project');
+
+Route::get('/notifications', 'NotificationController@getAllNotifications')->name('notifications.index');
+Route::patch('/notifications/{notificationId}', 'NotificationController@markAsRead')->name('notifications.read');
+
+Route::get('showChart/{input}', 'ChartController@showChart')->name('showChart');
