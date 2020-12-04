@@ -33,7 +33,7 @@ class NotiGradeTest extends TestCase
     {
         Mail::fake();
         Mail::send($this->notiGrade);
-        Mail::assertQueued(NotiGrade::class, function () {
+        Mail::assertSent(NotiGrade::class, function () {
             $this->notiGrade->build();
             $reflectionClass = new ReflectionClass($this->notiGrade);
             $reflectionProperty = $reflectionClass->getProperty('markdown');
